@@ -14,18 +14,18 @@ public enum MatchType
     FatalFourWay,
     SixManTag,
     Handicap,
-    
+
     // Multi-Person Matches
     BattleRoyal,
     RoyalRumble,
     Gauntlet,
-    
+
     // Cage/Enclosure Matches
     SteelCage,
     HellInACell,
     EliminationChamber,
     WarGames,
-    
+
     // Gimmick Matches
     LadderMatch,
     TablesMatch,
@@ -33,7 +33,7 @@ public enum MatchType
     TLC,
     StairwayToHell,
     MoneyInTheBank,
-    
+
     // Hardcore/Extreme
     Hardcore,
     NoDisqualification,
@@ -41,7 +41,7 @@ public enum MatchType
     FallsCountAnywhere,
     LastManStanding,
     IQuitMatch,
-    
+
     // Specialty Matches
     IronMan,
     TwoOutOfThree,
@@ -50,12 +50,12 @@ public enum MatchType
     BuriedAlive,
     CasketMatch,
     AmbulanceMatch,
-    
+
     // Team Matches
     Elimination,
     Survivor,
     WarGames5v5,
-    
+
     // Unique Formats
     Rumble30,
     Rumble40,
@@ -66,5 +66,5 @@ public enum MatchType
 public enum MatchSimulationMode
 {
     Simple,
-    Advanced
+    Advanced,
 }
