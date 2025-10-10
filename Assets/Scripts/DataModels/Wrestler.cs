@@ -21,6 +21,9 @@ public class wrestler
     // Current State
     public bool injured;
     public bool active = true;
+    public int injurySeverity; // 1 = Minor, 2 = Moderate, 3 = Severe
+    public string injuryType;
+    public int recoveryWeeksRemaining;
 
     // Career
     public Dictionary<string, int> popularityByLocation;

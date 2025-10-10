@@ -4,13 +4,20 @@ using UnityEngine;
 
 public static class ShowSimulator
 {
-    public static Show SimulateShow(Show show, GameData data)
+    /// <summary>
+    /// Simulates an entire show with all matches
+    /// </summary>
+    /// <param name="show">The show to simulate</param>
+    /// <param name="data">Game data</param>
+    /// <param name="mode">Simulation mode (Simple for fast sims, Advanced for detailed)</param>
+    public static Show SimulateShow(Show show, GameData data, MatchSimulationMode mode = MatchSimulationMode.Advanced)
     {
         List<int> ratings = new List<int>();
 
         for (int i = 0; i < show.matches.Count; i++)
         {
-            show.matches[i] = MatchSimulator.Simulate(show.matches[i], data);
+            // Simulate each match with specified mode
+            show.matches[i] = MatchSimulator.Simulate(show.matches[i], data, mode);
             ratings.Add(show.matches[i].rating);
 
             // Handle title changes
@@ -25,7 +32,11 @@ public static class ShowSimulator
         show.averageRating = Mathf.RoundToInt(ratings.Average());
         data.shows.Add(show);
 
-        Debug.Log($"Show {show.name} completed with average rating {show.averageRating}");
+        if (mode == MatchSimulationMode.Advanced)
+        {
+            Debug.Log($"Show {show.name} completed with average rating {show.averageRating}");
+        }
+
         return show;
     }
 }

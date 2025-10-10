@@ -62,3 +62,9 @@ public enum MatchType
     KingOfTheRing,
     Tournament,
 }
+
+public enum MatchSimulationMode
+{
+    Simple,
+    Advanced
+}

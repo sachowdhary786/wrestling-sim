@@ -10,6 +10,8 @@ public class GameData
     public List<Show> shows;
     public List<TagTeam> tagTeams = new List<TagTeam>();
     public List<Feud> feuds = new List<Feud>();
+    public List<Referee> referees = new List<Referee>();
+    public List<Trait> traits = new List<Trait>();
 
     public GameData()
     {
@@ -19,5 +21,8 @@ public class GameData
         shows = new List<Show>();
         tagTeams = new List<TagTeam>();
         feuds = new List<Feud>();
+        referees = new List<Referee>();
+        traits = new List<Trait>();
     }
 }
+

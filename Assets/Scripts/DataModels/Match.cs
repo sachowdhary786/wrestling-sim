@@ -9,6 +9,7 @@ public class Match
     public string location;
     public string matchType;
     public bool titleMatch;
+    public Referee referee;
 
     public List<string> participants = new List<string>();
     public string winnerId;
