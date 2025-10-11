@@ -68,3 +68,30 @@ public enum MatchSimulationMode
     Simple,
     Advanced,
 }
+
+public enum BookingPhilosophy
+{
+    Balanced,
+    Aggressive,
+    Defensive,
+}
+
+public enum MatchAim
+{
+    GreatMatch,
+    AdvanceStory,
+    Squash,
+    ProtectTalent,
+}
+
+public enum FinishType
+{
+    Clean,
+    Dirty,
+    Interference,
+    Injury,
+    DQ,
+    CountOut,
+    Escape,
+    DoubleCountOut,
+}
