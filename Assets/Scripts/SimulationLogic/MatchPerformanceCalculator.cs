@@ -9,6 +9,7 @@ public static class MatchPerformanceCalculator
 {
     public static float CalculateBasePerformance(
         Wrestler wrestler,
+        WrestlerStats tempStats,
         (float tech, float brawl, float psych, float aerial) weights,
         Match match
     )
@@ -18,13 +19,13 @@ public static class MatchPerformanceCalculator
             : 1.0f;
         float formFactor = 1.0f + UnityEngine.Random.Range(-0.05f, 0.05f);
 
-        // Weighted average of skill attributes
+        // Weighted average of skill attributes using temporary, morale-adjusted stats
         float performance =
             (
-                wrestler.technical * weights.tech
-                + wrestler.brawling * weights.brawl
-                + wrestler.psychology * weights.psych
-                + wrestler.aerial * weights.aerial
+                tempStats.Technical * weights.tech
+                + tempStats.Brawling * weights.brawl
+                + tempStats.Psychology * weights.psych
+                + tempStats.Aerial * weights.aerial
             ) / 4.0f;
 
         performance *= hometownBonus * formFactor;
@@ -149,7 +150,7 @@ public static class MatchPerformanceCalculator
         int tagBonus = GetTagChemistryBonus(state.wrestlers, state.data);
         avgPerformance += tagBonus;
 
-        float psychBonus = AverageStat(state.wrestlers, w => w.psychology) * 0.2f;
+        float psychBonus = AverageStat(state.wrestlerStats.Values.ToList(), s => s.Psychology) * 0.2f;
         float popularityBonus = AverageStat(state.wrestlers, w => w.popularity) * 0.1f;
         float randomFactor = UnityEngine.Random.Range(-10, 10);
 
@@ -170,6 +171,14 @@ public static class MatchPerformanceCalculator
 
         Debug.Log($"  Final Match Rating: {rating}/100");
         return rating;
+    }
+
+    public static float AverageStat(List<WrestlerStats> stats, Func<WrestlerStats, int> selector)
+    {
+        float total = 0;
+        foreach (var s in stats)
+            total += selector(s);
+        return total / stats.Count;
     }
 
     public static float AverageStat(List<Wrestler> wrestlers, Func<Wrestler, int> selector)

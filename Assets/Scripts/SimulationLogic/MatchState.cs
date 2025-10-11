@@ -6,13 +6,14 @@ using System.Collections.Generic;
 public class MatchState
 {
     public List<Wrestler> wrestlers;
+    public Dictionary<string, WrestlerStats> wrestlerStats;
     public Dictionary<Wrestler, float> scores;
     public Dictionary<Wrestler, float> momentum;
     public Match match;
     public GameData data;
     public (float tech, float brawl, float psych, float aerial) weights;
 
-    public MatchState(List<Wrestler> wrestlers, Match match, GameData data, (float, float, float, float) weights)
+    public MatchState(List<Wrestler> wrestlers, WrestlerStats stats1, WrestlerStats stats2, Match match, GameData data, (float, float, float, float) weights)
     {
         this.wrestlers = wrestlers;
         this.match = match;
@@ -20,5 +21,10 @@ public class MatchState
         this.weights = weights;
         this.scores = new Dictionary<Wrestler, float>();
         this.momentum = new Dictionary<Wrestler, float>();
+        this.wrestlerStats = new Dictionary<string, WrestlerStats>
+        {
+            { wrestlers[0].id.ToString(), stats1 },
+            { wrestlers[1].id.ToString(), stats2 }
+        };
     }
 }

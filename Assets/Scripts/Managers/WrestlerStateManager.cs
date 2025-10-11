@@ -91,59 +91,10 @@ public static class WrestlerStateManager
     /// <summary>
     /// Updates morale based on match result and booking
     /// </summary>
-    public static void UpdateMoraleAfterMatch(Wrestler wrestler, Match match, bool won, GameData data)
-    {
-        if (wrestler == null) return;
-        
-        int moraleChange = 0;
-        
-        // Winning boosts morale
-        if (won)
-        {
-            moraleChange += match.titleMatch ? 10 : 5;
-            
-            // Winning main events is big
-            if (match.rating > 80)
-                moraleChange += 3;
-        }
-        else
-        {
-            // Losing hurts, but not as much
-            moraleChange -= match.titleMatch ? 5 : 2;
-            
-            // Poor rating hurts more
-            if (match.rating < 50)
-                moraleChange -= 3;
-        }
-        
-        // High fatigue reduces morale
-        if (wrestler.fatigue > 70)
-            moraleChange -= 2;
-        
-        // Apply change
-        wrestler.morale = Mathf.Clamp(wrestler.morale + moraleChange, 0, 100);
-        
-        if (moraleChange != 0)
-        {
-            string direction = moraleChange > 0 ? "improved" : "decreased";
-            Debug.Log($"[STATE] {wrestler.name}'s morale {direction} to {wrestler.morale}/100");
-        }
-    }
     
     /// <summary>
     /// Daily morale drift (call regularly)
     /// </summary>
-    public static void UpdateDailyMorale(Wrestler wrestler)
-    {
-        if (wrestler == null) return;
-        
-        // Morale trends toward 70 (default "content" state)
-        int targetMorale = 70;
-        int difference = targetMorale - wrestler.morale;
-        int change = Mathf.RoundToInt(difference * 0.05f); // 5% drift per day
-        
-        wrestler.morale = Mathf.Clamp(wrestler.morale + change, 0, 100);
-    }
 
     // ========================================
     // MOMENTUM MANAGEMENT
@@ -256,7 +207,7 @@ public static class WrestlerStateManager
     public static void UpdateWrestlerAfterMatch(Wrestler wrestler, Match match, bool won, GameData data)
     {
         ApplyMatchFatigue(wrestler, match, data);
-        UpdateMoraleAfterMatch(wrestler, match, won, data);
+        MoraleManager.UpdateMoraleAfterMatch(wrestler, match, won);
         UpdateMomentum(wrestler, match, won, data);
         UpdatePopularity(wrestler, match, data);
     }
@@ -277,7 +228,7 @@ public static class WrestlerStateManager
             RecoverFatigue(wrestler, 7);
             
             // Update morale
-            UpdateDailyMorale(wrestler);
+            MoraleManager.ProcessWeeklyMoraleChanges(wrestler, wrestler.matchesThisWeek > 0);
             
             // Decay momentum
             if (wrestler.matchesThisWeek == 0)

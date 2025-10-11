@@ -20,8 +20,10 @@ public static class MatchPhaseSimulator
         // Calculate base performance for each wrestler
         foreach (var wrestler in state.wrestlers)
         {
+            var tempStats = state.wrestlerStats[wrestler.id.ToString()];
             float performance = MatchPerformanceCalculator.CalculateBasePerformance(
                 wrestler,
+                tempStats,
                 state.weights,
                 state.match
             );

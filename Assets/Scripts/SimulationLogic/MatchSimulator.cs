@@ -64,8 +64,12 @@ public static class MatchSimulator
             ? matchTypeWeights[booking.matchType]
             : matchTypeWeights["Singles"];
 
-        // Initialize match state
-        MatchState state = new MatchState(wrestlers, booking, data, weights);
+        // Get morale-adjusted stats for this match
+        var wrestlerOneStats = MoraleManager.GetMoraleAdjustedStats(wrestlers[0]);
+        var wrestlerTwoStats = MoraleManager.GetMoraleAdjustedStats(wrestlers[1]);
+
+        // Initialize match state with adjusted stats
+        MatchState state = new MatchState(wrestlers, wrestlerOneStats, wrestlerTwoStats, booking, data, weights);
 
         // === PHASE 1: Opening (Feeling Out Process) ===
         MatchPhaseSimulator.SimulateOpeningPhase(state);
@@ -110,8 +114,15 @@ public static class MatchSimulator
             ? matchTypeWeights[booking.matchType]
             : matchTypeWeights["Singles"];
 
+        // Get morale-adjusted stats for this match
+        var tempStats = new Dictionary<string, WrestlerStats>();
+        foreach(var wrestler in wrestlers)
+        {
+            tempStats[wrestler.id.ToString()] = MoraleManager.GetMoraleAdjustedStats(wrestler);
+        }
+
         // Use SimpleMatchSimulator for fast calculation
-        return SimpleMatchSimulator.Simulate(booking, wrestlers, data, weights);
+        return SimpleMatchSimulator.Simulate(booking, wrestlers, tempStats, data, weights);
     }
 
     private static List<Wrestler> GetWrestlersFromBooking(Match booking, GameData data)

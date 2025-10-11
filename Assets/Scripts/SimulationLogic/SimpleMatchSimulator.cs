@@ -14,12 +14,13 @@ public static class SimpleMatchSimulator
     public static Match Simulate(
         Match booking,
         List<Wrestler> wrestlers,
+        Dictionary<string, WrestlerStats> tempStats,
         GameData data,
         (float tech, float brawl, float psych, float aerial) weights
     )
     {
         // Calculate performance scores for all wrestlers
-        Dictionary<Wrestler, float> scores = CalculatePerformanceScores(wrestlers, booking, data, weights);
+        Dictionary<Wrestler, float> scores = CalculatePerformanceScores(wrestlers, tempStats, booking, data, weights);
 
         // Determine winner
         Wrestler winner = DetermineWinner(scores);
@@ -43,6 +44,7 @@ public static class SimpleMatchSimulator
 
     private static Dictionary<Wrestler, float> CalculatePerformanceScores(
         List<Wrestler> wrestlers,
+        Dictionary<string, WrestlerStats> tempStats,
         Match match,
         GameData data,
         (float tech, float brawl, float psych, float aerial) weights
@@ -52,8 +54,9 @@ public static class SimpleMatchSimulator
 
         foreach (var wrestler in wrestlers)
         {
+            var currentStats = tempStats[wrestler.id.ToString()];
             // Base performance calculation
-            float performance = MatchPerformanceCalculator.CalculateBasePerformance(wrestler, weights, match);
+            float performance = MatchPerformanceCalculator.CalculateBasePerformance(wrestler, currentStats, weights, match);
 
             // Apply bonuses
             performance = MatchPerformanceCalculator.ApplyTraitBonuses(wrestler, match, data, performance);
