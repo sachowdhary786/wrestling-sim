@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 
 [System.Serializable]
-public class wrestler
+public class Wrestler
 {
-    public int id;
+    public Guid id;
     public string name;
+    public int popularity; // Overall popularity, used for signing logic and main event status
     public string hometown;
     public int age;
+
+    // The wrestler's current employment contract. Null if a free agent.
+    public Contract contract;
 
     // Stats
     public int charisma;
@@ -21,6 +25,9 @@ public class wrestler
     // Current State
     public bool injured;
     public bool active = true;
+    public bool isRetired = false;
+    public bool isManager = false;
+    public Guid? trainerId;
     public int injurySeverity; // 1 = Minor, 2 = Moderate, 3 = Severe
     public string injuryType;
     public int recoveryWeeksRemaining;
@@ -28,7 +35,6 @@ public class wrestler
     // Booking & Performance State
     public int fatigue; // 0-100, increases with matches
     public int morale; // 0-100, affects performance
-    public int popularity; // 0-100, overall popularity
     public int momentum; // -100 to +100, recent booking strength
     public int matchesThisWeek;
     public int matchesThisMonth;
@@ -36,27 +42,29 @@ public class wrestler
 
     // Career
     public Dictionary<string, int> popularityByLocation;
+    public Dictionary<string, int> crowdFatigue; // Tracks over-exposure in a location
     public Alignment alignment;
     public string gimmick;
-    public string companyId;
     public string imagePath;
 
     // Relationships
-    public List<string> friends = new List<string>();
-    public List<string> rivals = new List<string>();\
+    public List<Guid> friends = new List<Guid>();
+    public List<Guid> rivals = new List<Guid>();
 
     // Traits
-    public List<string> traits = new List<string>();
+    public List<Guid> traits = new List<Guid>();
 
-    public List<string> teamIds = new List<string>();
+    public List<Guid> teamIds = new List<Guid>();
     public int teamwork;
 
     // Chemistry Modifiers
-    public Dictionary<string, int> chemistry = new Dictionary<string, int>();
+    public Dictionary<Guid, int> chemistry = new Dictionary<Guid, int>();
 
-    public wrestler()
+    public Wrestler()
     {
+        id = Guid.NewGuid();
         popularityByLocation = new Dictionary<string, int>();
+        crowdFatigue = new Dictionary<string, int>();
         morale = 70; // Start at decent morale
         popularity = 50; // Start at average popularity
         fatigue = 0; // Start fresh

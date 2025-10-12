@@ -107,9 +107,9 @@ public static class MatchPerformanceCalculator
                 var b = state.wrestlers[j];
 
                 int chemistry = 0;
-                if (a.friends.Contains(b.id.ToString()))
+                if (a.friends.Contains(b.id))
                     chemistry += 5;
-                if (a.rivals.Contains(b.id.ToString()))
+                if (a.rivals.Contains(b.id))
                     chemistry -= 5;
 
                 if (chemistry != 0)
@@ -125,23 +125,47 @@ public static class MatchPerformanceCalculator
     public static int GetTagChemistryBonus(List<Wrestler> wrestlers, GameData data)
     {
         int bonus = 0;
-        foreach (var team in data.tagTeams)
+        foreach (var team in data.teams)
         {
             int count = 0;
             foreach (var memberId in team.members)
             {
-                if (wrestlers.Exists(w => w.id.ToString() == memberId))
+                if (wrestlers.Exists(w => w.id == memberId))
                     count++;
             }
 
             if (count >= 2)
-                bonus += team.chemistry;
+                bonus += team.teamwork;
         }
         return bonus;
     }
 
     public static int CalculateMatchRating(MatchState state)
     {
+        float roadAgentBonus = 0;
+        if (state.Booking.roadAgentId.HasValue)
+        {
+            var roadAgent = state.Data.wrestlers.FirstOrDefault(w => w.id == state.Booking.roadAgentId.Value);
+            var roadAgentStaffInfo = state.Company.corporateStaff.FirstOrDefault(s => s.staffId == state.Booking.roadAgentId.Value);
+            if (roadAgent != null && roadAgentStaffInfo != null)
+            {
+                // Agent's psychology influence contributes to the match story quality
+                roadAgentBonus = roadAgentStaffInfo.psychologyInfluence / 10f; // Adds up to 10 points
+                Debug.Log($"  Road Agent {roadAgent.name} bonus: +{roadAgentBonus:F1}");
+            }
+        }
+
+        float managerBonus = 0;
+        foreach (var entry in state.Booking.managers)
+        {
+            var manager = state.Data.wrestlers.FirstOrDefault(w => w.id == entry.Value);
+            if (manager != null)
+            {
+                // Manager's charisma and mic skill contribute to the match hype
+                managerBonus += (manager.charisma + manager.micSkill) / 20f; // Each manager adds up to 10 points
+            }
+        }
+
         float avgPerformance = 0;
         foreach (float val in state.scores.Values)
             avgPerformance += val;
@@ -164,7 +188,7 @@ public static class MatchPerformanceCalculator
         }
 
         int rating = Mathf.Clamp(
-            Mathf.RoundToInt(avgPerformance * 0.6f + psychBonus + popularityBonus + randomFactor),
+            Mathf.RoundToInt(avgPerformance * 0.6f + psychBonus + popularityBonus + randomFactor + managerBonus + roadAgentBonus + state.BookingModifier),
             0,
             100
         );

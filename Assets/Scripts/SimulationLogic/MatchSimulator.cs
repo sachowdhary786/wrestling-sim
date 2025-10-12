@@ -20,13 +20,13 @@ public static class MatchSimulator
         { "Aerial", (0.7f, 0.8f, 1.0f, 1.3f) },
     };
 
-    /// <summary>
     /// Simulates a complete wrestling match from start to finish
     /// </summary>
     /// <param name="booking">The match to simulate</param>
     /// <param name="data">Game data</param>
     /// <param name="mode">Simulation mode (Simple for fast bulk sims, Advanced for detailed phase-by-phase)</param>
-    public static Match Simulate(Match booking, GameData data, MatchSimulationMode mode = MatchSimulationMode.Advanced)
+    /// <param name="bookingModifier">Modifier to apply to the booking (e.g. for special events)</param>
+    public static Match Simulate(Match booking, GameData data, MatchSimulationMode mode = MatchSimulationMode.Advanced, float bookingModifier = 0f)
     {
         if (booking.participants.Count < 2)
         {
@@ -35,16 +35,20 @@ public static class MatchSimulator
         }
 
         // Route to appropriate simulation mode
-        return mode == MatchSimulationMode.Simple
-            ? SimulateSimple(booking, data)
-            : SimulateAdvanced(booking, data);
+        // Pass the booking modifier to the appropriate simulation method
+        if (mode == MatchSimulationMode.Simple)
+        {
+            return SimulateSimple(booking, data, bookingModifier);
+        }
+        else
+        {
+            return SimulateAdvanced(booking, data, bookingModifier);
+        }
     }
 
     /// <summary>
     /// Advanced simulation with full phase-by-phase detail and logging
-    /// </summary>
-    private static Match SimulateAdvanced(Match booking, GameData data)
-    {
+    private static Match SimulateAdvanced(Match booking, GameData data, float bookingModifier = 0f)
         // Fetch wrestlers
         List<Wrestler> wrestlers = GetWrestlersFromBooking(booking, data);
         if (wrestlers.Count < 2)
@@ -69,7 +73,7 @@ public static class MatchSimulator
         var wrestlerTwoStats = MoraleManager.GetMoraleAdjustedStats(wrestlers[1]);
 
         // Initialize match state with adjusted stats
-        MatchState state = new MatchState(wrestlers, wrestlerOneStats, wrestlerTwoStats, booking, data, weights);
+        MatchState state = new MatchState(wrestlers, wrestlerOneStats, wrestlerTwoStats, booking, data, weights, bookingModifier);
 
         // === PHASE 1: Opening (Feeling Out Process) ===
         MatchPhaseSimulator.SimulateOpeningPhase(state);
@@ -79,7 +83,7 @@ public static class MatchSimulator
 
         // === PHASE 3: Climax (Finish Sequence) ===
         Wrestler winner = MatchPhaseSimulator.SimulateClimaxPhase(state);
-        booking.winnerId = winner.id.ToString();
+        booking.winnerId = winner.id;
 
         // === Calculate Final Rating ===
         booking.rating = MatchPerformanceCalculator.CalculateMatchRating(state);
@@ -93,7 +97,7 @@ public static class MatchSimulator
     /// <summary>
     /// Simple simulation for fast bulk processing (no phases, minimal logging)
     /// </summary>
-    private static Match SimulateSimple(Match booking, GameData data)
+    private static Match SimulateSimple(Match booking, GameData data, float bookingModifier = 0f)
     {
         // Fetch wrestlers
         List<Wrestler> wrestlers = GetWrestlersFromBooking(booking, data);
@@ -122,15 +126,15 @@ public static class MatchSimulator
         }
 
         // Use SimpleMatchSimulator for fast calculation
-        return SimpleMatchSimulator.Simulate(booking, wrestlers, tempStats, data, weights);
+        return SimpleMatchSimulator.Simulate(booking, wrestlers, tempStats, data, weights, bookingModifier);
     }
 
     private static List<Wrestler> GetWrestlersFromBooking(Match booking, GameData data)
     {
         List<Wrestler> wrestlers = new List<Wrestler>();
-        foreach (string id in booking.participants)
+        foreach (Guid id in booking.participants)
         {
-            var wrestler = data.wrestlers.Find(x => x.id.ToString() == id);
+            var wrestler = data.wrestlers.Find(x => x.id == id);
             if (wrestler != null)
                 wrestlers.Add(wrestler);
         }

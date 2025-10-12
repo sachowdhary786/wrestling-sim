@@ -12,13 +12,15 @@ public class MatchState
     public Match match;
     public GameData data;
     public (float tech, float brawl, float psych, float aerial) weights;
+    public float BookingModifier { get; }
 
-    public MatchState(List<Wrestler> wrestlers, WrestlerStats stats1, WrestlerStats stats2, Match match, GameData data, (float, float, float, float) weights)
+    public MatchState(List<Wrestler> wrestlers, WrestlerStats stats1, WrestlerStats stats2, Match match, GameData data, (float, float, float, float) weights, float bookingModifier)
     {
         this.wrestlers = wrestlers;
         this.match = match;
         this.data = data;
         this.weights = weights;
+        this.BookingModifier = bookingModifier;
         this.scores = new Dictionary<Wrestler, float>();
         this.momentum = new Dictionary<Wrestler, float>();
         this.wrestlerStats = new Dictionary<string, WrestlerStats>

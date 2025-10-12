@@ -1,0 +1,49 @@
+[
+  {
+    "id": "c1a9c3b8-4d6e-4c1f-a7d4-0a2b1c3d4e5f",
+    "name": "All Elite Wrestling",
+    "acronym": "AEW",
+    "companyType": 0,
+    "tier": 1, 
+    "prestige": 85,
+    "finances": 5000000,
+        "bookingPhilosophy": 0,
+        "rosterCap": 70,
+        "delegateBooking": true
+  },
+  {
+    "id": "d2b8d4c9-5e7f-4d2e-8c6a-1b3c4d5e6f7g",
+    "name": "World Wrestling Entertainment",
+    "acronym": "WWE",
+    "companyType": 1,
+    "tier": 1,
+    "prestige": 90,
+    "finances": 10000000,
+        "bookingPhilosophy": 2,
+        "rosterCap": 90,
+        "delegateBooking": true
+  },
+  {
+    "id": "e3c7e5da-6f8g-4e3f-9d7b-2c4d5e6f7g8h",
+    "name": "New Japan Pro-Wrestling",
+    "acronym": "NJPW",
+    "companyType": 1,
+    "tier": 1,
+    "prestige": 80,
+    "finances": 2000000,
+        "bookingPhilosophy": 3,
+        "rosterCap": 60,
+        "delegateBooking": true
+  },
+  {
+    "id": "f4d6e5f7-a8b9-c0d1-e2f3-a4b5c6d7e8f9",
+    "name": "Backyard Championship Wrestling",
+    "acronym": "BCW",
+    "companyType": 1,
+    "tier": 0,
+    "prestige": 25,
+    "finances": 5000,
+    "bookingPhilosophy": 0,
+    "rosterCap": 20
+  }
+]

@@ -4,10 +4,17 @@ using System.Collections.Generic;
 [Serializable]
 public class Show
 {
-    public string id;
-    public string showName;
-    public string date;
+    public Guid id;
+    public string name;
+    public Guid companyId;
+    public string location;
     public List<Match> matches;
-    public int averageRating;
-    public string companyId;
+
+    public Show(string name, Guid companyId)
+    {
+        this.id = Guid.NewGuid();
+        this.name = name;
+        this.companyId = companyId;
+        this.matches = new List<Match>();
+    }
 }

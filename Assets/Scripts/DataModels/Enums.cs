@@ -71,9 +71,11 @@ public enum MatchSimulationMode
 
 public enum BookingPhilosophy
 {
-    Balanced,
-    Aggressive,
-    Defensive,
+    Balanced,        // Mix of everything
+    Storyline,       // Prioritize feuds and angles
+    StarPower,       // Feature top stars
+    WorkRate,        // Feature best in-ring workers
+    Development     // Give newer talent opportunities
 }
 
 public enum MatchAim
@@ -94,4 +96,39 @@ public enum FinishType
     CountOut,
     Escape,
     DoubleCountOut,
+}
+
+public enum CompanyType
+{
+    Player,
+    AI,
+}
+
+public enum CompanyTier
+{
+    Indie,
+    Major,
+}
+
+/// <summary>
+/// Match position on the card
+/// </summary>
+public enum MatchSlot
+{
+    Opener,
+    EarlyMidcard,
+    Midcard,
+    LateMidcard,
+    SemiMain,
+    MainEvent
+}
+
+public enum StaffRole
+{
+    CEO,
+    HeadBooker,
+    RoadAgent,
+    Trainer,
+    Scout,
+    Doctor
 }

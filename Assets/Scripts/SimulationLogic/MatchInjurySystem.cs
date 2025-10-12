@@ -19,7 +19,7 @@ public static class MatchInjurySystem
             float roll = UnityEngine.Random.Range(0f, 100f);
             if (roll < injuryChance)
             {
-                ApplyInjury(wrestler, injuryChance);
+                ApplyInjury(wrestler, injuryChance, data);
             }
         }
     }
@@ -52,24 +52,44 @@ public static class MatchInjurySystem
         return Mathf.Clamp(chance, 0f, 90f);
     }
 
-    private static void ApplyInjury(Wrestler wrestler, float injuryChance)
+    private static void ApplyInjury(Wrestler wrestler, float injuryChance, GameData data)
     {
         int severity = DetermineInjurySeverity(injuryChance);
-        
+        wrestler.injuryType = GetRandomInjuryType(severity);
         wrestler.injured = true;
         wrestler.injurySeverity = severity;
-        wrestler.injuryType = GetRandomInjuryType(severity);
-        wrestler.recoveryWeeksRemaining = severity switch
+        int recoveryWeeks = GetRecoveryWeeks(severity);
+
+        // Apply bonus from company doctor, if available
+        var company = data.companies.FirstOrDefault(c => c.id == wrestler.contract?.companyId);
+        if (company != null)
         {
-            1 => UnityEngine.Random.Range(1, 3),
-            2 => UnityEngine.Random.Range(3, 6),
-            3 => UnityEngine.Random.Range(6, 12),
-            _ => 0
-        };
+            var doctor = company.corporateStaff.FirstOrDefault(s => s.role == StaffRole.Doctor);
+            if (doctor != null)
+            {
+                float reduction = recoveryWeeks * (doctor.injuryRecoveryBonus / 100f);
+                recoveryWeeks -= Mathf.RoundToInt(reduction);
+                var doctorInfo = data.wrestlers.First(w => w.id == doctor.staffId);
+                Debug.Log($"[Injury] {doctorInfo.name} has reduced {wrestler.name}'s recovery time!");
+            }
+        }
+
+        wrestler.recoveryWeeksRemaining = recoveryWeeks;
 
         Debug.Log($"⚠️ {wrestler.name} suffers a {wrestler.injuryType}! Estimated recovery: {wrestler.recoveryWeeksRemaining} weeks.");
 
         ApplyInjuryStatPenalty(wrestler, severity);
+    }
+
+    private static int GetRecoveryWeeks(int severity)
+    {
+        return severity switch
+        {
+            1 => Random.Range(1, 5),      // 1-4 weeks for minor
+            2 => Random.Range(4, 13),     // 1-3 months for moderate
+            3 => Random.Range(13, 53),    // 3-12 months for major
+            _ => 0
+        };
     }
 
     private static int DetermineInjurySeverity(float injuryChance)

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -8,32 +7,22 @@ using UnityEngine;
 /// </summary>
 public static class SimpleMatchSimulator
 {
-    /// <summary>
-    /// Simulates a match quickly without phase-by-phase detail
-    /// </summary>
-    public static Match Simulate(
-        Match booking,
-        List<Wrestler> wrestlers,
-        Dictionary<string, WrestlerStats> tempStats,
-        GameData data,
-        (float tech, float brawl, float psych, float aerial) weights
-    )
+    public static Match Simulate(Match booking, List<Wrestler> wrestlers, Dictionary<string, WrestlerStats> tempStats, GameData data, (float tech, float brawl, float psych, float aerial) weights, float bookingModifier = 0f)
     {
         // Calculate performance scores for all wrestlers
         Dictionary<Wrestler, float> scores = CalculatePerformanceScores(wrestlers, tempStats, booking, data, weights);
 
         // Determine winner
         Wrestler winner = DetermineWinner(scores);
-        booking.winnerId = winner.id.ToString();
+        booking.winnerId = winner.id;
 
         // Calculate match rating (with referee influence)
-        booking.rating = CalculateRating(scores, wrestlers, data, booking);
+        booking.rating = CalculateSimpleRating(wrestlers, tempStats, booking, data, bookingModifier, scores);
 
         // Determine finish type
         string finishType = DetermineFinishType(booking.matchType);
         
         // Apply referee influence on finish
-        finishType = RefereeManager.ApplyRefereeInfluence(finishType, booking.referee, booking);
         booking.finishType = finishType;
 
         // Quick injury check (lower chance than advanced mode)
@@ -42,81 +31,7 @@ public static class SimpleMatchSimulator
         return booking;
     }
 
-    private static Dictionary<Wrestler, float> CalculatePerformanceScores(
-        List<Wrestler> wrestlers,
-        Dictionary<string, WrestlerStats> tempStats,
-        Match match,
-        GameData data,
-        (float tech, float brawl, float psych, float aerial) weights
-    )
-    {
-        Dictionary<Wrestler, float> scores = new Dictionary<Wrestler, float>();
-
-        foreach (var wrestler in wrestlers)
-        {
-            var currentStats = tempStats[wrestler.id.ToString()];
-            // Base performance calculation
-            float performance = MatchPerformanceCalculator.CalculateBasePerformance(wrestler, currentStats, weights, match);
-
-            // Apply bonuses
-            performance = MatchPerformanceCalculator.ApplyTraitBonuses(wrestler, match, data, performance);
-            performance += MatchPerformanceCalculator.GetFeudHeatBonus(wrestler, data);
-
-            // Add some randomness
-            performance += UnityEngine.Random.Range(-5f, 5f);
-
-            scores[wrestler] = performance;
-        }
-
-        // Apply chemistry (simplified)
-        ApplyChemistryModifiers(scores, wrestlers);
-
-        return scores;
-    }
-
-    private static void ApplyChemistryModifiers(Dictionary<Wrestler, float> scores, List<Wrestler> wrestlers)
-    {
-        for (int i = 0; i < wrestlers.Count; i++)
-        {
-            for (int j = i + 1; j < wrestlers.Count; j++)
-            {
-                var a = wrestlers[i];
-                var b = wrestlers[j];
-
-                int chemistry = 0;
-                if (a.friends.Contains(b.id.ToString()))
-                    chemistry += 3; // Smaller bonus than advanced mode
-                if (a.rivals.Contains(b.id.ToString()))
-                    chemistry -= 3;
-
-                if (chemistry != 0)
-                {
-                    scores[a] += chemistry;
-                    scores[b] += chemistry;
-                }
-            }
-        }
-    }
-
-    private static Wrestler DetermineWinner(Dictionary<Wrestler, float> scores)
-    {
-        Wrestler winner = null;
-        float highScore = float.MinValue;
-
-        foreach (var kvp in scores)
-        {
-            float adjusted = kvp.Value + UnityEngine.Random.Range(-8f, 8f);
-            if (adjusted > highScore)
-            {
-                highScore = adjusted;
-                winner = kvp.Key;
-            }
-        }
-
-        return winner;
-    }
-
-    private static int CalculateRating(Dictionary<Wrestler, float> scores, List<Wrestler> wrestlers, GameData data, Match match)
+    private static int CalculateSimpleRating(List<Wrestler> wrestlers, Dictionary<string, WrestlerStats> tempStats, Match booking, GameData data, float bookingModifier, Dictionary<Wrestler, float> scores)
     {
         float avgPerformance = 0;
         foreach (float val in scores.Values)
@@ -128,7 +43,7 @@ public static class SimpleMatchSimulator
         avgPerformance += tagBonus;
 
         // Referee influence
-        float refereeBonus = RefereeManager.GetRefereeRatingModifier(match.referee, match);
+        float refereeBonus = RefereeManager.GetRefereeRatingModifier(booking.referee, booking);
         avgPerformance += refereeBonus;
 
         // Simplified rating calculation
@@ -136,13 +51,9 @@ public static class SimpleMatchSimulator
         float popularityBonus = MatchPerformanceCalculator.AverageStat(wrestlers, w => w.popularity) * 0.08f;
         float randomFactor = UnityEngine.Random.Range(-8, 8);
 
-        int rating = Mathf.Clamp(
-            Mathf.RoundToInt(avgPerformance * 0.6f + psychBonus + popularityBonus + randomFactor),
-            0,
-            100
-        );
+        int finalRating = Mathf.Clamp(Mathf.RoundToInt(avgPerformance * 0.6f + psychBonus + popularityBonus + randomFactor + bookingModifier), 0, 100);
 
-        return rating;
+        return finalRating;
     }
 
     private static string DetermineFinishType(string matchType)
