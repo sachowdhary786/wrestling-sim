@@ -4,9 +4,9 @@ using System.Collections.Generic;
 [Serializable]
 public class Title
 {
-    public string id;
+    public Guid id;
     public string name;
-    public string companyId;
-    public string currentChampionId;
-    public List<string> previousChampions; // Historicity
+    public Guid companyId;
+    public Guid? currentChampionId;
+    public List<Guid> previousChampions = new List<Guid>(); // Historicity
 }

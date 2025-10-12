@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class Wrestler
@@ -31,11 +33,11 @@ public class Wrestler
     public int injurySeverity; // 1 = Minor, 2 = Moderate, 3 = Severe
     public string injuryType;
     public int recoveryWeeksRemaining;
-    
+
     // Booking & Performance State
     public int fatigue; // 0-100, increases with matches
     public int morale; // 0-100, affects performance
-    public int momentum; // -100 to +100, recent booking strength
+    public float momentum; // -100 to +100, recent booking strength
     public int matchesThisWeek;
     public int matchesThisMonth;
     public int daysRestSinceLastMatch;
@@ -46,7 +48,6 @@ public class Wrestler
     public Alignment alignment;
     public string gimmick;
     public string imagePath;
-
     // Relationships
     public List<Guid> friends = new List<Guid>();
     public List<Guid> rivals = new List<Guid>();
@@ -58,7 +59,6 @@ public class Wrestler
     public int teamwork;
 
     // Chemistry Modifiers
-    public Dictionary<Guid, int> chemistry = new Dictionary<Guid, int>();
 
     public Wrestler()
     {

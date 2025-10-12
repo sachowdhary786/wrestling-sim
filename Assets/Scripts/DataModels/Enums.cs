@@ -71,11 +71,11 @@ public enum MatchSimulationMode
 
 public enum BookingPhilosophy
 {
-    Balanced,        // Mix of everything
-    Storyline,       // Prioritize feuds and angles
-    StarPower,       // Feature top stars
-    WorkRate,        // Feature best in-ring workers
-    Development     // Give newer talent opportunities
+    Balanced, // Mix of everything
+    Storyline, // Prioritize feuds and angles
+    StarPower, // Feature top stars
+    WorkRate, // Feature best in-ring workers
+    Development, // Give newer talent opportunities
 }
 
 public enum MatchAim
@@ -88,6 +88,8 @@ public enum MatchAim
 
 public enum FinishType
 {
+    Pinfall,
+    Submission,
     Clean,
     Dirty,
     Interference,
@@ -96,6 +98,9 @@ public enum FinishType
     CountOut,
     Escape,
     DoubleCountOut,
+    Knockout,
+    ControversialFinish,
+    BotchedFinish,
 }
 
 public enum CompanyType
@@ -120,7 +125,7 @@ public enum MatchSlot
     Midcard,
     LateMidcard,
     SemiMain,
-    MainEvent
+    MainEvent,
 }
 
 public enum StaffRole
@@ -130,5 +135,5 @@ public enum StaffRole
     RoadAgent,
     Trainer,
     Scout,
-    Doctor
+    Doctor,
 }

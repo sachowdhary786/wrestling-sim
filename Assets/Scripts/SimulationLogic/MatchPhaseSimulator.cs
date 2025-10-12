@@ -9,7 +9,7 @@ public static class MatchPhaseSimulator
     public static void SimulateOpeningPhase(MatchState state)
     {
         Debug.Log($"[OPENING] {state.match.matchType} match begins!");
-        
+
         // Log referee assignment
         if (state.match.referee != null)
         {
@@ -45,7 +45,7 @@ public static class MatchPhaseSimulator
 
         // Apply chemistry modifiers
         MatchPerformanceCalculator.ApplyChemistryModifiers(state);
-        
+
         // Apply referee influence
         RefereeManager.ApplyPhaseInfluence(state, "Opening");
     }
@@ -66,14 +66,19 @@ public static class MatchPhaseSimulator
             state.momentum[wrestler] = Mathf.Min(100f, state.momentum[wrestler] + momentumGain);
             state.scores[wrestler] += momentumGain * 0.3f; // Momentum affects overall score
 
-            Debug.Log($"  Momentum shift #{i + 1}: {wrestler.name} gains control (+{momentumGain:F1})");
+            Debug.Log(
+                $"  Momentum shift #{i + 1}: {wrestler.name} gains control (+{momentumGain:F1})"
+            );
 
             // Others lose some momentum
             foreach (var other in state.wrestlers)
             {
                 if (other != wrestler)
                 {
-                    state.momentum[other] = Mathf.Max(0f, state.momentum[other] - (momentumGain * 0.5f));
+                    state.momentum[other] = Mathf.Max(
+                        0f,
+                        state.momentum[other] - (momentumGain * 0.5f)
+                    );
                 }
             }
         }
@@ -81,11 +86,13 @@ public static class MatchPhaseSimulator
         // Near falls / close calls add excitement
         if (UnityEngine.Random.value > 0.5f)
         {
-            Wrestler nearFallWrestler = state.wrestlers[UnityEngine.Random.Range(0, state.wrestlers.Count)];
+            Wrestler nearFallWrestler = state.wrestlers[
+                UnityEngine.Random.Range(0, state.wrestlers.Count)
+            ];
             state.scores[nearFallWrestler] += 5f;
             Debug.Log($"  NEAR FALL! {nearFallWrestler.name} almost had it!");
         }
-        
+
         // Check for referee events during mid phase
         var refEvent = RefereeEventSystem.CheckForEvent(state.match.referee, state.match, 2, state);
         if (refEvent != null)
@@ -99,7 +106,7 @@ public static class MatchPhaseSimulator
     {
         Debug.Log($"[CLIMAX] Heading into the finish sequence!");
         Debug.Log($"  Building to the finish...");
-        
+
         // Apply referee influence during climax
         RefereeManager.ApplyPhaseInfluence(state, "Climax");
 
@@ -128,11 +135,15 @@ public static class MatchPhaseSimulator
         if (refEvent != null)
         {
             RefereeEventSystem.ApplyEvent(refEvent, state.match.referee, state.match, state);
-            
+
             // Handle referee knockout - need replacement
             if (refEvent.requiresReplacement)
             {
-                var replacement = RefereeScheduler.FindReplacementReferee(state.match, state.match.referee, state.data);
+                var replacement = RefereeScheduler.FindReplacementReferee(
+                    state.match,
+                    state.match.referee,
+                    state.data
+                );
                 if (replacement != null)
                 {
                     state.match.referee = replacement;
@@ -141,10 +152,14 @@ public static class MatchPhaseSimulator
         }
 
         // Determine finish type
-        string finishType = DetermineFinishType(state);
-        
+        FinishType finishType = DetermineFinishType(state);
+
         // Apply referee influence on finish type
-        finishType = RefereeManager.ApplyRefereeInfluence(finishType, state.match.referee, state.match);
+        finishType = RefereeManager.ApplyRefereeInfluence(
+            finishType,
+            state.match.referee,
+            state.match
+        );
         state.match.finishType = finishType;
 
         Debug.Log($"  FINISH: {winner.name} wins via {finishType}!");
@@ -154,22 +169,33 @@ public static class MatchPhaseSimulator
 
     // Phase 4: Aftermath - Post-match consequences
     public static void SimulateAftermath(MatchState state, Wrestler winner)
-    {
         Debug.Log($"[AFTERMATH] Match concluded. Winner: {winner.name}");
 
         // Record referee performance
         if (state.match.referee != null)
         {
             bool wasKnockedOut = state.match.referee.stats.timesKnockedOut > 0 && 
-                                 state.match.finishType == "Controversial Finish";
+                                 state.match.finishType == FinishType.ControversialFinish;
             bool wasBumped = state.match.referee.stats.timesBumped > 0;
-            
-            RefereeCareerManager.RecordMatch(state.match.referee, state.match, wasKnockedOut, wasBumped);
+
+            RefereeCareerManager.RecordMatch(
+                state.match.referee,
+                state.match,
+{{ ... }}
+                wasBumped
+            );
         }
 
         // Check for injuries
-        float fatigue = (100 - MatchPerformanceCalculator.AverageStat(state.wrestlers, w => w.stamina)) / 100f;
-        MatchInjurySystem.CheckForInjuries(state.wrestlers, state.match, state.match.matchType, fatigue, state.data);
+        float fatigue =
+            (100 - MatchPerformanceCalculator.AverageStat(state.wrestlers, w => w.stamina)) / 100f;
+        MatchInjurySystem.CheckForInjuries(
+            state.wrestlers,
+            state.match,
+            state.match.matchType,
+            fatigue,
+            state.data
+        );
 
         // Post-match angle chance
         if (UnityEngine.Random.value < 0.15f) // 15% chance
@@ -179,9 +205,9 @@ public static class MatchPhaseSimulator
         }
     }
 
-    private static string DetermineFinishType(MatchState state)
+    private static FinishType DetermineFinishType(MatchState state)
     {
-        string[] finishes = { "Pinfall", "Submission", "Knockout", "Count Out", "DQ" };
+        FinishType[] finishes = { FinishType.Pinfall, FinishType.Submission, FinishType.Knockout, FinishType.CountOut, FinishType.DQ };
         float[] weights = { 60f, 20f, 10f, 5f, 5f };
 
         // Adjust based on match type
@@ -203,6 +229,6 @@ public static class MatchPhaseSimulator
                 return finishes[i];
         }
 
-        return "Pinfall";
+        return FinishType.Pinfall;
     }
 }

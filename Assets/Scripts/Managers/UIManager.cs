@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
 public class UIManager : MonoBehaviour
 {
     public GameObject rosterPanel,

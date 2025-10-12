@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -6,7 +7,13 @@ using UnityEngine;
 /// </summary>
 public static class MatchInjurySystem
 {
-    public static void CheckForInjuries(List<Wrestler> wrestlers, Match match, string matchType, float fatigue, GameData data)
+    public static void CheckForInjuries(
+        List<Wrestler> wrestlers,
+        Match match,
+        string matchType,
+        float fatigue,
+        GameData data
+    )
     {
         foreach (var wrestler in wrestlers)
         {
@@ -39,7 +46,7 @@ public static class MatchInjurySystem
             "Ladder" => 20f,
             "Cage" => 10f,
             "TLC" => 25f,
-            _ => 2f
+            _ => 2f,
         };
 
         // Toughness reduces injury chance
@@ -70,13 +77,17 @@ public static class MatchInjurySystem
                 float reduction = recoveryWeeks * (doctor.injuryRecoveryBonus / 100f);
                 recoveryWeeks -= Mathf.RoundToInt(reduction);
                 var doctorInfo = data.wrestlers.First(w => w.id == doctor.staffId);
-                Debug.Log($"[Injury] {doctorInfo.name} has reduced {wrestler.name}'s recovery time!");
+                Debug.Log(
+                    $"[Injury] {doctorInfo.name} has reduced {wrestler.name}'s recovery time!"
+                );
             }
         }
 
         wrestler.recoveryWeeksRemaining = recoveryWeeks;
 
-        Debug.Log($"⚠️ {wrestler.name} suffers a {wrestler.injuryType}! Estimated recovery: {wrestler.recoveryWeeksRemaining} weeks.");
+        Debug.Log(
+            $"⚠️ {wrestler.name} suffers a {wrestler.injuryType}! Estimated recovery: {wrestler.recoveryWeeksRemaining} weeks."
+        );
 
         ApplyInjuryStatPenalty(wrestler, severity);
     }
@@ -85,18 +96,20 @@ public static class MatchInjurySystem
     {
         return severity switch
         {
-            1 => Random.Range(1, 5),      // 1-4 weeks for minor
-            2 => Random.Range(4, 13),     // 1-3 months for moderate
-            3 => Random.Range(13, 53),    // 3-12 months for major
-            _ => 0
+            1 => Random.Range(1, 5), // 1-4 weeks for minor
+            2 => Random.Range(4, 13), // 1-3 months for moderate
+            3 => Random.Range(13, 53), // 3-12 months for major
+            _ => 0,
         };
     }
 
     private static int DetermineInjurySeverity(float injuryChance)
     {
-        if (injuryChance < 10) return 1;   // Minor
-        if (injuryChance < 25) return 2;   // Moderate
-        return 3;                          // Major
+        if (injuryChance < 10)
+            return 1; // Minor
+        if (injuryChance < 25)
+            return 2; // Moderate
+        return 3; // Major
     }
 
     private static string GetRandomInjuryType(int severity)
@@ -110,7 +123,7 @@ public static class MatchInjurySystem
             1 => minor[UnityEngine.Random.Range(0, minor.Length)],
             2 => moderate[UnityEngine.Random.Range(0, moderate.Length)],
             3 => major[UnityEngine.Random.Range(0, major.Length)],
-            _ => "unknown injury"
+            _ => "unknown injury",
         };
     }
 
@@ -121,7 +134,7 @@ public static class MatchInjurySystem
             1 => 0.95f,
             2 => 0.85f,
             3 => 0.70f,
-            _ => 1f
+            _ => 1f,
         };
 
         wrestler.technical = Mathf.RoundToInt(wrestler.technical * penalty);

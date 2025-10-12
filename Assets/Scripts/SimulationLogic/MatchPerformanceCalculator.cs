@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -14,7 +15,10 @@ public static class MatchPerformanceCalculator
         Match match
     )
     {
-        float hometownBonus = match.location.Contains(wrestler.hometown, StringComparison.OrdinalIgnoreCase)
+        float hometownBonus = match.location.Contains(
+            wrestler.hometown,
+            StringComparison.OrdinalIgnoreCase
+        )
             ? 1.05f
             : 1.0f;
         float formFactor = 1.0f + UnityEngine.Random.Range(-0.05f, 0.05f);
@@ -49,7 +53,12 @@ public static class MatchPerformanceCalculator
             switch (trait.effect)
             {
                 case TraitEffect.CrowdFavourite:
-                    if (match.location.Contains(wrestler.hometown, StringComparison.OrdinalIgnoreCase))
+                    if (
+                        match.location.Contains(
+                            wrestler.hometown,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
                         basePerformance *= 1.05f;
                     break;
 
@@ -88,7 +97,7 @@ public static class MatchPerformanceCalculator
             if (!feud.active)
                 continue;
 
-            bool wrestlerInFeud = feud.participants.Contains(wrestler.id.ToString());
+            bool wrestlerInFeud = feud.participants.Contains(wrestler.id);
             if (wrestlerInFeud)
             {
                 maxHeat = Mathf.Max(maxHeat, feud.heat);
@@ -116,7 +125,9 @@ public static class MatchPerformanceCalculator
                 {
                     state.scores[a] += chemistry;
                     state.scores[b] += chemistry;
-                    Debug.Log($"  Chemistry: {a.name} & {b.name} ({(chemistry > 0 ? "positive" : "negative")})");
+                    Debug.Log(
+                        $"  Chemistry: {a.name} & {b.name} ({(chemistry > 0 ? "positive" : "negative")})"
+                    );
                 }
             }
         }
@@ -135,7 +146,7 @@ public static class MatchPerformanceCalculator
             }
 
             if (count >= 2)
-                bonus += team.teamwork;
+                bonus += team.chemistry;
         }
         return bonus;
     }
@@ -145,8 +156,12 @@ public static class MatchPerformanceCalculator
         float roadAgentBonus = 0;
         if (state.Booking.roadAgentId.HasValue)
         {
-            var roadAgent = state.Data.wrestlers.FirstOrDefault(w => w.id == state.Booking.roadAgentId.Value);
-            var roadAgentStaffInfo = state.Company.corporateStaff.FirstOrDefault(s => s.staffId == state.Booking.roadAgentId.Value);
+            var roadAgent = state.Data.wrestlers.FirstOrDefault(w =>
+                w.id == state.Booking.roadAgentId.Value
+            );
+            var roadAgentStaffInfo = state.Company.corporateStaff.FirstOrDefault(s =>
+                s.staffId == state.Booking.roadAgentId.Value
+            );
             if (roadAgent != null && roadAgentStaffInfo != null)
             {
                 // Agent's psychology influence contributes to the match story quality
@@ -174,12 +189,16 @@ public static class MatchPerformanceCalculator
         int tagBonus = GetTagChemistryBonus(state.wrestlers, state.data);
         avgPerformance += tagBonus;
 
-        float psychBonus = AverageStat(state.wrestlerStats.Values.ToList(), s => s.Psychology) * 0.2f;
+        float psychBonus =
+            AverageStat(state.wrestlerStats.Values.ToList(), s => s.Psychology) * 0.2f;
         float popularityBonus = AverageStat(state.wrestlers, w => w.popularity) * 0.1f;
         float randomFactor = UnityEngine.Random.Range(-10, 10);
 
         // Referee influence on rating
-        float refereeBonus = RefereeManager.GetRefereeRatingModifier(state.match.referee, state.match);
+        float refereeBonus = RefereeManager.GetRefereeRatingModifier(
+            state.match.referee,
+            state.match
+        );
         avgPerformance += refereeBonus;
 
         if (state.match.referee != null && refereeBonus != 0)
@@ -188,7 +207,15 @@ public static class MatchPerformanceCalculator
         }
 
         int rating = Mathf.Clamp(
-            Mathf.RoundToInt(avgPerformance * 0.6f + psychBonus + popularityBonus + randomFactor + managerBonus + roadAgentBonus + state.BookingModifier),
+            Mathf.RoundToInt(
+                avgPerformance * 0.6f
+                    + psychBonus
+                    + popularityBonus
+                    + randomFactor
+                    + managerBonus
+                    + roadAgentBonus
+                    + state.BookingModifier
+            ),
             0,
             100
         );

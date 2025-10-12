@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public static class StatManager
@@ -7,7 +8,7 @@ public static class StatManager
         Wrestler winner = data.wrestlers.Find(w => w.id == match.winnerId);
 
         // Adjust stats
-        foreach (string id in match.participants)
+        foreach (Guid id in match.participants)
         {
             Wrestler w = data.wrestlers.Find(x => x.id == id);
 

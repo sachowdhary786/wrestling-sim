@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +27,12 @@ public static class MatchSimulator
     /// <param name="data">Game data</param>
     /// <param name="mode">Simulation mode (Simple for fast bulk sims, Advanced for detailed phase-by-phase)</param>
     /// <param name="bookingModifier">Modifier to apply to the booking (e.g. for special events)</param>
-    public static Match Simulate(Match booking, GameData data, MatchSimulationMode mode = MatchSimulationMode.Advanced, float bookingModifier = 0f)
+    public static Match Simulate(
+        Match booking,
+        GameData data,
+        MatchSimulationMode mode = MatchSimulationMode.Advanced,
+        float bookingModifier = 0f
+    )
     {
         if (booking.participants.Count < 2)
         {
@@ -49,6 +55,7 @@ public static class MatchSimulator
     /// <summary>
     /// Advanced simulation with full phase-by-phase detail and logging
     private static Match SimulateAdvanced(Match booking, GameData data, float bookingModifier = 0f)
+    {
         // Fetch wrestlers
         List<Wrestler> wrestlers = GetWrestlersFromBooking(booking, data);
         if (wrestlers.Count < 2)
@@ -73,7 +80,15 @@ public static class MatchSimulator
         var wrestlerTwoStats = MoraleManager.GetMoraleAdjustedStats(wrestlers[1]);
 
         // Initialize match state with adjusted stats
-        MatchState state = new MatchState(wrestlers, wrestlerOneStats, wrestlerTwoStats, booking, data, weights, bookingModifier);
+        MatchState state = new MatchState(
+            wrestlers,
+            wrestlerOneStats,
+            wrestlerTwoStats,
+            booking,
+            data,
+            weights,
+            bookingModifier
+        );
 
         // === PHASE 1: Opening (Feeling Out Process) ===
         MatchPhaseSimulator.SimulateOpeningPhase(state);
@@ -120,13 +135,20 @@ public static class MatchSimulator
 
         // Get morale-adjusted stats for this match
         var tempStats = new Dictionary<string, WrestlerStats>();
-        foreach(var wrestler in wrestlers)
+        foreach (var wrestler in wrestlers)
         {
             tempStats[wrestler.id.ToString()] = MoraleManager.GetMoraleAdjustedStats(wrestler);
         }
 
         // Use SimpleMatchSimulator for fast calculation
-        return SimpleMatchSimulator.Simulate(booking, wrestlers, tempStats, data, weights, bookingModifier);
+        return SimpleMatchSimulator.Simulate(
+            booking,
+            wrestlers,
+            tempStats,
+            data,
+            weights,
+            bookingModifier
+        );
     }
 
     private static List<Wrestler> GetWrestlersFromBooking(Match booking, GameData data)

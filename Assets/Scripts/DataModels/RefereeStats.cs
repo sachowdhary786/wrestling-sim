@@ -8,13 +8,13 @@ using System.Collections.Generic;
 public class RefereeStats
 {
     public string refereeId;
-    
+
     // Match Statistics
     public int totalMatches;
     public int titleMatches;
     public int mainEventMatches;
     public int hardcoreMatches;
-    
+
     // Finish Type Statistics
     public int pinfalls;
     public int submissions;
@@ -23,25 +23,25 @@ public class RefereeStats
     public int countOuts;
     public int controversialFinishes;
     public int botchedFinishes;
-    
+
     // Quality Metrics
     public float averageMatchRating;
     public int highestRatedMatch;
     public int lowestRatedMatch;
-    
+
     // Incidents
     public int timesKnockedOut;
     public int timesBumped;
     public int controversies;
     public int perfectMatches; // No incidents, high rating
-    
+
     // Reputation
     public int reputation; // 0-100, builds over time
     public List<string> achievements = new List<string>();
-    
+
     // Recent Performance (last 10 matches)
     public List<int> recentMatchRatings = new List<int>();
-    
+
     public RefereeStats(string refereeId)
     {
         this.refereeId = refereeId;
@@ -54,67 +54,72 @@ public class RefereeStats
     public void RecordMatch(Match match, bool wasKnockedOut = false, bool wasBumped = false)
     {
         totalMatches++;
-        
+
         if (match.titleMatch)
             titleMatches++;
-        
+
         // Track match type
         if (IsHardcoreMatch(match.matchType))
             hardcoreMatches++;
-        
+
         // Track finish type
         switch (match.finishType)
         {
-            case "Pinfall":
+            case FinishType.Pinfall:
                 pinfalls++;
                 break;
-            case "Submission":
+            case FinishType.Submission:
                 submissions++;
                 break;
-            case "Knockout":
+            case FinishType.Knockout:
                 knockouts++;
                 break;
-            case "DQ":
+            case FinishType.DQ:
                 disqualifications++;
                 break;
-            case "Count Out":
+            case FinishType.CountOut:
                 countOuts++;
                 break;
-            case "Controversial Finish":
+            case FinishType.ControversialFinish:
                 controversialFinishes++;
                 controversies++;
                 break;
-            case "Botched Finish":
+            case FinishType.BotchedFinish:
                 botchedFinishes++;
                 controversies++;
                 break;
         }
-        
+
         // Track rating
         UpdateAverageRating(match.rating);
         recentMatchRatings.Add(match.rating);
         if (recentMatchRatings.Count > 10)
             recentMatchRatings.RemoveAt(0);
-        
+
         if (match.rating > highestRatedMatch)
             highestRatedMatch = match.rating;
-        
+
         if (lowestRatedMatch == 0 || match.rating < lowestRatedMatch)
             lowestRatedMatch = match.rating;
-        
+
         // Track incidents
         if (wasKnockedOut)
             timesKnockedOut++;
         if (wasBumped)
             timesBumped++;
-        
+
         // Check for perfect match
-        if (match.rating >= 85 && !wasKnockedOut && !wasBumped && 
-            match.finishType != "Controversial Finish" && match.finishType != "Botched Finish")
+        if (
+            match.rating >= 85
+            && !wasKnockedOut
+            && !wasBumped
+            && match.finishType != FinishType.ControversialFinish
+            && match.finishType != FinishType.BotchedFinish
+        )
         {
             perfectMatches++;
         }
-        
+
         // Update reputation
         UpdateReputation(match.rating, wasKnockedOut, wasBumped);
     }
@@ -133,7 +138,7 @@ public class RefereeStats
             reputation = Math.Min(100, reputation + 0);
         else if (matchRating < 50)
             reputation = Math.Max(0, reputation - 1);
-        
+
         // Incidents decrease reputation
         if (wasKnockedOut)
             reputation = Math.Max(0, reputation - 2);
@@ -148,16 +153,20 @@ public class RefereeStats
     {
         if (recentMatchRatings.Count < 3)
             return "Unknown";
-        
+
         float recentAvg = 0;
         foreach (int rating in recentMatchRatings)
             recentAvg += rating;
         recentAvg /= recentMatchRatings.Count;
-        
-        if (recentAvg >= 80) return "Excellent";
-        if (recentAvg >= 70) return "Good";
-        if (recentAvg >= 60) return "Average";
-        if (recentAvg >= 50) return "Poor";
+
+        if (recentAvg >= 80)
+            return "Excellent";
+        if (recentAvg >= 70)
+            return "Good";
+        if (recentAvg >= 60)
+            return "Average";
+        if (recentAvg >= 50)
+            return "Poor";
         return "Struggling";
     }
 
@@ -168,15 +177,15 @@ public class RefereeStats
     {
         if (totalMatches < 10)
             return "Developing";
-        
+
         float hardcorePercent = (float)hardcoreMatches / totalMatches;
         float titlePercent = (float)titleMatches / totalMatches;
-        
+
         if (hardcorePercent > 0.4f)
             return "Hardcore Specialist";
         if (titlePercent > 0.3f)
             return "Main Event Specialist";
-        
+
         return "All-Rounder";
     }
 
@@ -191,7 +200,7 @@ public class RefereeStats
             "LastManStanding" => true,
             "TLC" => true,
             "LadderMatch" => true,
-            _ => false
+            _ => false,
         };
     }
 }
