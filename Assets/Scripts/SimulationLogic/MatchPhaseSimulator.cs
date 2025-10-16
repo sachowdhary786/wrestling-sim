@@ -169,21 +169,18 @@ public static class MatchPhaseSimulator
 
     // Phase 4: Aftermath - Post-match consequences
     public static void SimulateAftermath(MatchState state, Wrestler winner)
+    {
         Debug.Log($"[AFTERMATH] Match concluded. Winner: {winner.name}");
 
         // Record referee performance
         if (state.match.referee != null)
         {
-            bool wasKnockedOut = state.match.referee.stats.timesKnockedOut > 0 && 
-                                 state.match.finishType == FinishType.ControversialFinish;
+            bool wasKnockedOut =
+                state.match.referee.stats.timesKnockedOut > 0
+                && state.match.finishType == FinishType.ControversialFinish;
             bool wasBumped = state.match.referee.stats.timesBumped > 0;
 
-            RefereeCareerManager.RecordMatch(
-                state.match.referee,
-                state.match,
-{{ ... }}
-                wasBumped
-            );
+            RefereeCareerManager.RecordMatch(state.match.referee, state.match, wasBumped);
         }
 
         // Check for injuries
@@ -207,7 +204,14 @@ public static class MatchPhaseSimulator
 
     private static FinishType DetermineFinishType(MatchState state)
     {
-        FinishType[] finishes = { FinishType.Pinfall, FinishType.Submission, FinishType.Knockout, FinishType.CountOut, FinishType.DQ };
+        FinishType[] finishes =
+        {
+            FinishType.Pinfall,
+            FinishType.Submission,
+            FinishType.Knockout,
+            FinishType.CountOut,
+            FinishType.DQ,
+        };
         float[] weights = { 60f, 20f, 10f, 5f, 5f };
 
         // Adjust based on match type

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -79,9 +80,9 @@ public static class MatchSimulatorExtensions
         }
 
         // Get title name if applicable
-        if (match.titleMatch && !string.IsNullOrEmpty(match.titleId))
+        if (match.titleMatch && match.titleId.HasValue)
         {
-            var title = data.titles?.Find(t => t.id.ToString() == match.titleId);
+            var title = data.titles?.Find(t => t.id == match.titleId.Value);
             result.titleName = title != null ? title.name : "Championship";
         }
 

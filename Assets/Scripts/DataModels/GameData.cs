@@ -25,4 +25,3 @@ public class GameData
         traits = new List<Trait>();
     }
 }
-

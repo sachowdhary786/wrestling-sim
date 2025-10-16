@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ public static class SimulationModeHelper
         {
             var matchStartTime = Time.realtimeSinceStartup;
             var match = matches[i];
-            
+
             // Simulate the match
             MatchSimulator.Simulate(match, data, mode);
             var matchTime = Time.realtimeSinceStartup - matchStartTime;
@@ -72,31 +73,35 @@ public static class SimulationModeHelper
             var avgTimePerMatch = elapsed / (i + 1);
             var estimatedRemaining = avgTimePerMatch * (matches.Length - i - 1);
 
-            MatchResultsEvent.BroadcastBulkProgress(new BulkSimulationProgress
-            {
-                completedMatches = i + 1,
-                totalMatches = matches.Length,
-                percentComplete = ((i + 1) / (float)matches.Length) * 100f,
-                estimatedTimeRemaining = estimatedRemaining,
-                lastCompletedMatch = result
-            });
+            MatchResultsEvent.BroadcastBulkProgress(
+                new BulkSimulationProgress
+                {
+                    completedMatches = i + 1,
+                    totalMatches = matches.Length,
+                    percentComplete = ((i + 1) / (float)matches.Length) * 100f,
+                    estimatedTimeRemaining = estimatedRemaining,
+                    lastCompletedMatch = result,
+                }
+            );
         }
 
         var totalElapsed = Time.realtimeSinceStartup - startTime;
 
         // Broadcast completion summary
-        MatchResultsEvent.BroadcastBulkComplete(new BulkSimulationSummary
-        {
-            totalMatches = matches.Length,
-            totalTime = totalElapsed,
-            averageTimePerMatch = totalElapsed / matches.Length,
-            mode = mode,
-            results = results,
-            totalInjuries = totalInjuries,
-            averageRating = totalRating / matches.Length,
-            highestRating = highestRating,
-            lowestRating = lowestRating
-        });
+        MatchResultsEvent.BroadcastBulkComplete(
+            new BulkSimulationSummary
+            {
+                totalMatches = matches.Length,
+                totalTime = totalElapsed,
+                averageTimePerMatch = totalElapsed / matches.Length,
+                mode = mode,
+                results = results,
+                totalInjuries = totalInjuries,
+                averageRating = totalRating / matches.Length,
+                highestRating = highestRating,
+                lowestRating = lowestRating,
+            }
+        );
     }
 
     /// <summary>
@@ -123,63 +128,72 @@ public static class SimulationModeHelper
         var advancedTime = Time.realtimeSinceStartup - startAdvanced;
 
         // Broadcast results
-        MatchResultsEvent.BroadcastBenchmark(new BenchmarkResult
-        {
-            iterations = iterations,
-            simpleModeTotalTime = simpleTime,
-            simpleModeAvgTime = simpleTime / iterations,
-            advancedModeTotalTime = advancedTime,
-            advancedModeAvgTime = advancedTime / iterations,
-            speedMultiplier = advancedTime / simpleTime
-        });
+        MatchResultsEvent.BroadcastBenchmark(
+            new BenchmarkResult
+            {
+                iterations = iterations,
+                simpleModeTotalTime = simpleTime,
+                simpleModeAvgTime = simpleTime / iterations,
+                advancedModeTotalTime = advancedTime,
+                advancedModeAvgTime = advancedTime / iterations,
+                speedMultiplier = advancedTime / simpleTime,
+            }
+        );
     }
 
     /// <summary>
     /// Creates a MatchResult object from a completed match
     /// </summary>
-    private static MatchResult CreateMatchResult(Match match, GameData data, MatchSimulationMode mode, float simTime)
+    private static MatchResult CreateMatchResult(
+        Match match,
+        GameData data,
+        MatchSimulationMode mode,
+        float simTime
+    )
     {
         var result = new MatchResult
         {
             match = match,
             rating = match.rating,
-            finishType = match.finishType,
+            finishType = match.finishType.ToString(),
             simulationMode = mode,
             simulationTime = simTime,
             wasTitleMatch = match.titleMatch,
             participantNames = new List<string>(),
-            events = new List<MatchEvent>()
+            events = new List<MatchEvent>(),
         };
 
         // Get winner name
-        var winner = data.wrestlers.Find(w => w.id.ToString() == match.winnerId);
+        var winner = data.wrestlers.Find(w => w.id == match.winnerId);
         result.winnerName = winner != null ? winner.name : "Unknown";
 
         // Get participant names
         foreach (var participantId in match.participants)
         {
-            var wrestler = data.wrestlers.Find(w => w.id.ToString() == participantId);
+            var wrestler = data.wrestlers.Find(w => w.id == participantId);
             if (wrestler != null)
             {
                 result.participantNames.Add(wrestler.name);
-                
+
                 // Check for injuries
                 if (wrestler.injured && wrestler.recoveryWeeksRemaining > 0)
                 {
-                    result.events.Add(new MatchEvent
-                    {
-                        eventType = "Injury",
-                        description = $"Suffered a {wrestler.injuryType}",
-                        wrestlerName = wrestler.name
-                    });
+                    result.events.Add(
+                        new MatchEvent
+                        {
+                            eventType = "Injury",
+                            description = $"Suffered a {wrestler.injuryType}",
+                            wrestlerName = wrestler.name,
+                        }
+                    );
                 }
             }
         }
 
         // Get title name if applicable
-        if (match.titleMatch && !string.IsNullOrEmpty(match.titleId))
+        if (match.titleMatch && match.titleId.HasValue)
         {
-            var title = data.titles?.Find(t => t.id.ToString() == match.titleId);
+            var title = data.titles?.Find(t => t.id == match.titleId.Value);
             result.titleName = title != null ? title.name : "Championship";
         }
 
@@ -196,7 +210,7 @@ public static class SimulationModeHelper
             location = original.location,
             matchType = original.matchType,
             titleMatch = original.titleMatch,
-            participants = new List<string>(original.participants),
+            participants = new List<Guid>(original.participants),
         };
     }
 

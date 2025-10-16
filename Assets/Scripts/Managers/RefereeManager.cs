@@ -10,7 +10,7 @@ public static class RefereeManager
     /// <summary>
     /// Assigns an appropriate referee to a match
     /// </summary>
-    static void AssignReferee(Match match, GameData data)
+    public static void AssignReferee(Match match, GameData data)
     {
         if (data.referees == null || data.referees.Count == 0)
         {
@@ -54,7 +54,7 @@ public static class RefereeManager
     /// <summary>
     /// Calculates the referee's influence on match rating
     /// </summary>
-    static float GetRefereeRatingModifier(Referee referee, Match match)
+    public static float GetRefereeRatingModifier(Referee referee, Match match)
     {
         if (referee == null)
             return 0f;
@@ -78,201 +78,204 @@ public static class RefereeManager
         if (referee.isHardcoreSpecialist && IsHardcoreMatch(match.matchType))
             modifier += 3f;
 
-        /// Determines if the referee influences the finish type
-        /// </summary>
-        static FinishType ApplyRefereeInfluence(
-            FinishType baseFinishType,
-            Referee referee,
-            Match match
-        )
-        {
-            if (referee == null)
-                return baseFinishType;
+        return modifier;
+    }
 
-            // High strictness increases DQ/Count Out chance
-            if (referee.strictness > 70)
-            {
-                float roll = Random.Range(0f, 100f);
-                if (roll < (referee.strictness - 70) * 0.5f) // Up to 15% chance
-                {
-                    return Random.value > 0.5f ? FinishType.DQ : FinishType.CountOut;
-                }
-            }
-
-            // High corruption can change finish types (screwjobs, fast counts)
-            if (referee.corruption > 60)
-            {
-                float roll = Random.Range(0f, 100f);
-                if (roll < (referee.corruption - 60) * 0.3f) // Up to 12% chance
-                {
-                    Debug.Log($"⚠️ Referee {referee.name} makes a controversial call!");
-
-                    // Corrupt finish - favor company-backed wrestlers or create controversy
-                    if (referee.isFavoredByCompany)
-                    {
-                        return FinishType.ControversialFinish;
-                    }
-                }
-            }
-
-            // Low consistency can cause botched finishes
-            if (referee.consistency < 40)
-            {
-                float roll = Random.Range(0f, 100f);
-                if (roll < (40 - referee.consistency) * 0.2f) // Up to 8% chance
-                {
-                    Debug.Log($"⚠️ Referee {referee.name} botches the finish!");
-                    return FinishType.BotchedFinish;
-                }
-            }
-
+    /// <summary>
+    /// Determines if the referee influences the finish type
+    /// </summary>
+    public static FinishType ApplyRefereeInfluence(
+        FinishType baseFinishType,
+        Referee referee,
+        Match match
+    )
+    {
+        if (referee == null)
             return baseFinishType;
-        }
 
-        /// <summary>
-        /// Applies referee influence during match phases (Advanced mode only)
-        /// </summary>
-        static void ApplyPhaseInfluence(MatchState state, string phase)
+        // High strictness increases DQ/Count Out chance
+        if (referee.strictness > 70)
         {
-            if (state.match.referee == null)
-                return;
-
-            var referee = state.match.referee;
-
-            switch (phase)
+            float roll = Random.Range(0f, 100f);
+            if (roll < (referee.strictness - 70) * 0.5f) // Up to 15% chance
             {
-                case "Opening":
-                    // Experienced refs help match flow
-                    if (referee.experience > 70)
-                    {
-                        foreach (var wrestler in state.wrestlers)
-                        {
-                            state.scores[wrestler] += referee.experience * 0.02f; // Small bonus
-                        }
-                        Debug.Log($"  Referee {referee.name}'s experience improves match flow");
-                    }
-                    break;
-
-                case "MidPhase":
-                    // Consistent refs maintain match quality
-                    if (referee.consistency > 70)
-                    {
-                        // Reduce randomness in momentum swings
-                        Debug.Log($"  Referee {referee.name} maintains consistent pacing");
-                    }
-                    break;
-
-                case "Climax":
-                    // This is where referee influence matters most
-                    if (referee.corruption > 70)
-                    {
-                        Debug.Log($"  Referee {referee.name} may influence the outcome...");
-                    }
-                    break;
+                return Random.value > 0.5f ? FinishType.DQ : FinishType.CountOut;
             }
         }
 
-        /// <summary>
-        /// Gets a description of the referee's style
-        /// </summary>
-        static string GetRefereeStyle(Referee referee)
+        // High corruption can change finish types (screwjobs, fast counts)
+        if (referee.corruption > 60)
         {
-            if (referee == null)
-                return "No referee assigned";
-
-            List<string> traits = new List<string>();
-
-            if (referee.strictness > 70)
-                traits.Add("Strict");
-            else if (referee.strictness < 30)
-                traits.Add("Lenient");
-
-            if (referee.corruption > 60)
-                traits.Add("Corrupt");
-            else if (referee.corruption < 20)
-                traits.Add("Fair");
-
-            if (referee.experience > 80)
-                traits.Add("Veteran");
-            else if (referee.experience < 30)
-                traits.Add("Rookie");
-
-            if (referee.consistency > 80)
-                traits.Add("Consistent");
-            else if (referee.consistency < 40)
-                traits.Add("Unpredictable");
-
-            if (referee.isMainEventRef)
-                traits.Add("Main Event");
-            if (referee.isHardcoreSpecialist)
-                traits.Add("Hardcore Specialist");
-
-            return traits.Count > 0 ? string.Join(", ", traits) : "Standard Referee";
-        }
-
-        /// <summary>
-        /// Creates a default referee pool for testing
-        /// </summary>
-        static List<Referee> CreateDefaultReferees()
-        {
-            return new List<Referee>
+            float roll = Random.Range(0f, 100f);
+            if (roll < (referee.corruption - 60) * 0.3f) // Up to 12% chance
             {
-                new Referee("Earl Hebner", strictness: 60, corruption: 40, experience: 95)
+                Debug.Log($"⚠️ Referee {referee.name} makes a controversial call!");
+
+                // Corrupt finish - favor company-backed wrestlers or create controversy
+                if (referee.isFavoredByCompany)
                 {
-                    id = "ref_earl",
-                    consistency = 85,
-                    isMainEventRef = true,
-                },
-                new Referee("Mike Chioda", strictness: 70, corruption: 20, experience: 90)
-                {
-                    id = "ref_mike",
-                    consistency = 90,
-                    isMainEventRef = true,
-                },
-                new Referee("Charles Robinson", strictness: 50, corruption: 15, experience: 85)
-                {
-                    id = "ref_charles",
-                    consistency = 80,
-                    isMainEventRef = true,
-                },
-                new Referee("Nick Patrick", strictness: 40, corruption: 70, experience: 75)
-                {
-                    id = "ref_nick",
-                    consistency = 60,
-                    isFavoredByCompany = true,
-                },
-                new Referee("Tommy Young", strictness: 80, corruption: 10, experience: 80)
-                {
-                    id = "ref_tommy",
-                    consistency = 85,
-                },
-                new Referee("Bryce Remsburg", strictness: 30, corruption: 5, experience: 70)
-                {
-                    id = "ref_bryce",
-                    consistency = 75,
-                    isHardcoreSpecialist = true,
-                },
-                new Referee("Rookie Ref", strictness: 60, corruption: 20, experience: 25)
-                {
-                    id = "ref_rookie",
-                    consistency = 40,
-                },
-            };
+                    return FinishType.ControversialFinish;
+                }
+            }
         }
 
-        static bool IsHardcoreMatch(string matchType)
+        // Low consistency can cause botched finishes
+        if (referee.consistency < 40)
         {
-            return matchType switch
+            float roll = Random.Range(0f, 100f);
+            if (roll < (40 - referee.consistency) * 0.2f) // Up to 8% chance
             {
-                "Hardcore" => true,
-                "NoDisqualification" => true,
-                "StreetFight" => true,
-                "FallsCountAnywhere" => true,
-                "LastManStanding" => true,
-                "TLC" => true,
-                "LadderMatch" => true,
-                _ => false,
-            };
+                Debug.Log($"⚠️ Referee {referee.name} botches the finish!");
+                return FinishType.BotchedFinish;
+            }
         }
+
+        return baseFinishType;
+    }
+
+    /// <summary>
+    /// Applies referee influence during match phases (Advanced mode only)
+    /// </summary>
+    public static void ApplyPhaseInfluence(MatchState state, string phase)
+    {
+        if (state.match.referee == null)
+            return;
+
+        var referee = state.match.referee;
+
+        switch (phase)
+        {
+            case "Opening":
+                // Experienced refs help match flow
+                if (referee.experience > 70)
+                {
+                    foreach (var wrestler in state.wrestlers)
+                    {
+                        state.scores[wrestler] += referee.experience * 0.02f; // Small bonus
+                    }
+                    Debug.Log($"  Referee {referee.name}'s experience improves match flow");
+                }
+                break;
+
+            case "MidPhase":
+                // Consistent refs maintain match quality
+                if (referee.consistency > 70)
+                {
+                    // Reduce randomness in momentum swings
+                    Debug.Log($"  Referee {referee.name} maintains consistent pacing");
+                }
+                break;
+
+            case "Climax":
+                // This is where referee influence matters most
+                if (referee.corruption > 70)
+                {
+                    Debug.Log($"  Referee {referee.name} may influence the outcome...");
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Gets a description of the referee's style
+    /// </summary>
+    public static string GetRefereeStyle(Referee referee)
+    {
+        if (referee == null)
+            return "No referee assigned";
+
+        List<string> traits = new List<string>();
+
+        if (referee.strictness > 70)
+            traits.Add("Strict");
+        else if (referee.strictness < 30)
+            traits.Add("Lenient");
+
+        if (referee.corruption > 60)
+            traits.Add("Corrupt");
+        else if (referee.corruption < 20)
+            traits.Add("Fair");
+
+        if (referee.experience > 80)
+            traits.Add("Veteran");
+        else if (referee.experience < 30)
+            traits.Add("Rookie");
+
+        if (referee.consistency > 80)
+            traits.Add("Consistent");
+        else if (referee.consistency < 40)
+            traits.Add("Unpredictable");
+
+        if (referee.isMainEventRef)
+            traits.Add("Main Event");
+        if (referee.isHardcoreSpecialist)
+            traits.Add("Hardcore Specialist");
+
+        return traits.Count > 0 ? string.Join(", ", traits) : "Standard Referee";
+    }
+
+    /// <summary>
+    /// Creates a default referee pool for testing
+    /// </summary>
+    static List<Referee> CreateDefaultReferees()
+    {
+        return new List<Referee>
+        {
+            new Referee("Earl Hebner", strictness: 60, corruption: 40, experience: 95)
+            {
+                id = "ref_earl",
+                consistency = 85,
+                isMainEventRef = true,
+            },
+            new Referee("Mike Chioda", strictness: 70, corruption: 20, experience: 90)
+            {
+                id = "ref_mike",
+                consistency = 90,
+                isMainEventRef = true,
+            },
+            new Referee("Charles Robinson", strictness: 50, corruption: 15, experience: 85)
+            {
+                id = "ref_charles",
+                consistency = 80,
+                isMainEventRef = true,
+            },
+            new Referee("Nick Patrick", strictness: 40, corruption: 70, experience: 75)
+            {
+                id = "ref_nick",
+                consistency = 60,
+                isFavoredByCompany = true,
+            },
+            new Referee("Tommy Young", strictness: 80, corruption: 10, experience: 80)
+            {
+                id = "ref_tommy",
+                consistency = 85,
+            },
+            new Referee("Bryce Remsburg", strictness: 30, corruption: 5, experience: 70)
+            {
+                id = "ref_bryce",
+                consistency = 75,
+                isHardcoreSpecialist = true,
+            },
+            new Referee("Rookie Ref", strictness: 60, corruption: 20, experience: 25)
+            {
+                id = "ref_rookie",
+                consistency = 40,
+            },
+        };
+    }
+
+    static bool IsHardcoreMatch(string matchType)
+    {
+        return matchType switch
+        {
+            "Hardcore" => true,
+            "NoDisqualification" => true,
+            "StreetFight" => true,
+            "FallsCountAnywhere" => true,
+            "LastManStanding" => true,
+            "TLC" => true,
+            "LadderMatch" => true,
+            _ => false,
+        };
     }
 }

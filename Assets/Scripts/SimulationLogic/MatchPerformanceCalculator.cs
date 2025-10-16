@@ -154,26 +154,30 @@ public static class MatchPerformanceCalculator
     public static int CalculateMatchRating(MatchState state)
     {
         float roadAgentBonus = 0;
-        if (state.Booking.roadAgentId.HasValue)
+        if (state.match.roadAgentId.HasValue)
         {
-            var roadAgent = state.Data.wrestlers.FirstOrDefault(w =>
-                w.id == state.Booking.roadAgentId.Value
+            var roadAgent = state.data.wrestlers.FirstOrDefault(w =>
+                w.id == state.match.roadAgentId.Value
             );
-            var roadAgentStaffInfo = state.Company.corporateStaff.FirstOrDefault(s =>
-                s.staffId == state.Booking.roadAgentId.Value
-            );
-            if (roadAgent != null && roadAgentStaffInfo != null)
+            var company = state.data.companies.FirstOrDefault();
+            if (company != null)
             {
-                // Agent's psychology influence contributes to the match story quality
-                roadAgentBonus = roadAgentStaffInfo.psychologyInfluence / 10f; // Adds up to 10 points
-                Debug.Log($"  Road Agent {roadAgent.name} bonus: +{roadAgentBonus:F1}");
+                var roadAgentStaffInfo = company.corporateStaff.FirstOrDefault(s =>
+                    s.staffId == state.match.roadAgentId.Value
+                );
+                if (roadAgent != null && roadAgentStaffInfo != null)
+                {
+                    // Agent's psychology influence contributes to the match story quality
+                    roadAgentBonus = roadAgentStaffInfo.psychologyInfluence / 10f; // Adds up to 10 points
+                    Debug.Log($"  Road Agent {roadAgent.name} bonus: +{roadAgentBonus:F1}");
+                }
             }
         }
 
         float managerBonus = 0;
-        foreach (var entry in state.Booking.managers)
+        foreach (var entry in state.match.managers)
         {
-            var manager = state.Data.wrestlers.FirstOrDefault(w => w.id == entry.Value);
+            var manager = state.data.wrestlers.FirstOrDefault(w => w.id == entry.Value);
             if (manager != null)
             {
                 // Manager's charisma and mic skill contribute to the match hype

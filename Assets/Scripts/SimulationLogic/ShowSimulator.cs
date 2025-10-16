@@ -10,9 +10,13 @@ public static class ShowSimulator
     /// <param name="show">The show to simulate</param>
     /// <param name="data">Game data</param>
     /// <param name="mode">Simulation mode (Simple for fast sims, Advanced for detailed)</param>
-    public static Show SimulateShow(Show show, GameData data, MatchSimulationMode mode = MatchSimulationMode.Advanced)
+    public static Show SimulateShow(
+        Show show,
+        GameData data,
+        MatchSimulationMode mode = MatchSimulationMode.Advanced
+    )
     {
-        List<int> ratings = new List<int>();
+        List<float> ratings = new List<float>();
 
         for (int i = 0; i < show.matches.Count; i++)
         {

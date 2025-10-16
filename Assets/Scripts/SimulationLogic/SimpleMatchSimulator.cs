@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -42,7 +43,7 @@ public static class SimpleMatchSimulator
         );
 
         // Determine finish type
-        string finishType = DetermineFinishType(booking.matchType);
+        FinishType finishType = DetermineFinishType(booking.matchType);
 
         // Apply referee influence on finish
         booking.finishType = finishType;
@@ -51,6 +52,40 @@ public static class SimpleMatchSimulator
         CheckForInjuries(wrestlers, booking.matchType, data);
 
         return booking;
+    }
+
+    private static Dictionary<Wrestler, float> CalculatePerformanceScores(
+        List<Wrestler> wrestlers,
+        Dictionary<string, WrestlerStats> tempStats,
+        Match match,
+        GameData data,
+        (float tech, float brawl, float psych, float aerial) weights
+    )
+    {
+        var scores = new Dictionary<Wrestler, float>();
+        foreach (var wrestler in wrestlers)
+        {
+            float basePerformance = MatchPerformanceCalculator.CalculateBasePerformance(
+                wrestler,
+                tempStats[wrestler.id.ToString()],
+                weights,
+                match
+            );
+            float withTraits = MatchPerformanceCalculator.ApplyTraitBonuses(
+                wrestler,
+                match,
+                data,
+                basePerformance
+            );
+            float withFeud = withTraits + MatchPerformanceCalculator.GetFeudHeatBonus(wrestler, data);
+            scores[wrestler] = withFeud;
+        }
+        return scores;
+    }
+
+    private static Wrestler DetermineWinner(Dictionary<Wrestler, float> scores)
+    {
+        return scores.OrderByDescending(s => s.Value).First().Key;
     }
 
     private static int CalculateSimpleRating(
@@ -97,10 +132,10 @@ public static class SimpleMatchSimulator
         return finalRating;
     }
 
-    private static string DetermineFinishType(string matchType)
+    private static FinishType DetermineFinishType(string matchType)
     {
         // Simplified finish type determination
-        string[] finishes = { "Pinfall", "Submission", "Knockout", "Count Out", "DQ" };
+        string[] finishes = { "Pinfall", "Submission", "Knockout", "CountOut", "DQ" };
         float[] weights = { 65f, 20f, 8f, 4f, 3f };
 
         // Adjust for match type
@@ -133,10 +168,10 @@ public static class SimpleMatchSimulator
         {
             cumulative += weights[i];
             if (roll <= cumulative)
-                return finishes[i];
+                return (FinishType)System.Enum.Parse(typeof(FinishType), finishes[i]);
         }
 
-        return "Pinfall";
+        return FinishType.Pinfall;
     }
 
     private static void CheckForInjuries(List<Wrestler> wrestlers, string matchType, GameData data)

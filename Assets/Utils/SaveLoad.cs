@@ -1,10 +1,13 @@
+using UnityEngine;
+using System.IO;
+
 public static class SaveManager
 {
     private static string path = Application.persistentDataPath + "/save.json";
 
     public static void Save(GameData data)
     {
-        string json = JsonUtility.ToJson(data, true);
+        string json = UnityEngine.JsonUtility.ToJson(data, true);
         File.WriteAllText(path, json);
     }
 
@@ -13,6 +16,6 @@ public static class SaveManager
         if (!File.Exists(path))
             return null;
         string json = File.ReadAllText(path);
-        return JsonUtility.FromJson<GameData>(json);
+        return UnityEngine.JsonUtility.FromJson<GameData>(json);
     }
 }

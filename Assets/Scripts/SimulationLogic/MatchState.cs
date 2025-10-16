@@ -14,7 +14,15 @@ public class MatchState
     public (float tech, float brawl, float psych, float aerial) weights;
     public float BookingModifier { get; }
 
-    public MatchState(List<Wrestler> wrestlers, WrestlerStats stats1, WrestlerStats stats2, Match match, GameData data, (float, float, float, float) weights, float bookingModifier)
+    public MatchState(
+        List<Wrestler> wrestlers,
+        WrestlerStats stats1,
+        WrestlerStats stats2,
+        Match match,
+        GameData data,
+        (float, float, float, float) weights,
+        float bookingModifier
+    )
     {
         this.wrestlers = wrestlers;
         this.match = match;
@@ -26,7 +34,7 @@ public class MatchState
         this.wrestlerStats = new Dictionary<string, WrestlerStats>
         {
             { wrestlers[0].id.ToString(), stats1 },
-            { wrestlers[1].id.ToString(), stats2 }
+            { wrestlers[1].id.ToString(), stats2 },
         };
     }
 }

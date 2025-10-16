@@ -48,6 +48,7 @@ public class Wrestler
     public Alignment alignment;
     public string gimmick;
     public string imagePath;
+
     // Relationships
     public List<Guid> friends = new List<Guid>();
     public List<Guid> rivals = new List<Guid>();
