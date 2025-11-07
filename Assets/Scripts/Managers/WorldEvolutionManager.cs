@@ -6,7 +6,7 @@ public static class WorldEvolutionManager
 {
     public static void ProcessWeeklyDecay(GameData gameData)
     {
-        foreach (var wrestler in gameData.wrestlers)
+        foreach (var wrestler in gameData.wrestlers.Values)
         {
             var locations = wrestler.crowdFatigue.Keys.ToList();
             foreach (var location in locations)
@@ -30,7 +30,7 @@ public static class WorldEvolutionManager
 
     private static void ProcessRetirements(GameData gameData)
     {
-        var potentialRetirees = gameData.wrestlers.Where(w => !w.isRetired && w.age >= 38).ToList();
+        var potentialRetirees = gameData.wrestlers.Values.Where(w => !w.isRetired && w.age >= 38).ToList();
         foreach (var wrestler in potentialRetirees)
         {
             float retirementChance = (wrestler.age - 37) * 0.05f; // 5% chance at 38, 10% at 39...
@@ -41,8 +41,7 @@ public static class WorldEvolutionManager
                 // Adjust salary to a non-active staff rate if they are under contract
                 if (wrestler.contract != null)
                 {
-                    var company = gameData.companies.FirstOrDefault(c => c.id == wrestler.contract.companyId);
-                    if (company != null)
+                    if (gameData.companies.TryGetValue(wrestler.contract.companyId, out var company))
                     {
                         // Adjust salary first, as it applies to both tiers
                         int previousSalary = wrestler.contract.monthlySalary;
@@ -81,7 +80,7 @@ public static class WorldEvolutionManager
     private static void GenerateNewWrestlers(GameData gameData, int count)
     {
         // Find the best scout in the world to influence the quality of the new generation
-        var bestScout = gameData.companies
+        var bestScout = gameData.companies.Values
             .Where(c => c.tier == CompanyTier.Major)
             .SelectMany(c => c.corporateStaff)
             .Where(s => s.role == StaffRole.Scout)
@@ -92,7 +91,7 @@ public static class WorldEvolutionManager
         if (bestScout != null)
         {
             qualityBonus = bestScout.talentDiscovery / 10f; // Best scout can add up to 10 points to base stats
-            var scoutInfo = gameData.wrestlers.First(w => w.id == bestScout.staffId);
+            var scoutInfo = gameData.wrestlers[bestScout.staffId];
             Debug.Log($"[Scouting] The new generation of wrestlers is influenced by the keen eye of {scoutInfo.name}.");
         }
 
@@ -114,7 +113,7 @@ public static class WorldEvolutionManager
                 toughness = Random.Range(40, 80),
                 alignment = (Alignment)Random.Range(0, 3)
             };
-            gameData.wrestlers.Add(newWrestler);
+            gameData.wrestlers.Add(newWrestler.id, newWrestler);
             Debug.Log($"[Newgen] A new wrestler, {newWrestler.name} from {newWrestler.hometown}, has entered the world!");
         }
     }
@@ -134,18 +133,18 @@ public static class WorldEvolutionManager
 
     private static void AssignTrainers(GameData gameData)
     {
-        foreach (var company in gameData.companies.Where(c => c.tier == CompanyTier.Major))
+        foreach (var company in gameData.companies.Values.Where(c => c.tier == CompanyTier.Major))
         {
             var trainers = company.corporateStaff.Where(s => s.role == StaffRole.Trainer).ToList();
             if (!trainers.Any()) continue;
 
-            var trainees = gameData.wrestlers.Where(w => w.contract?.companyId == company.id && w.age < 25 && !w.trainerId.HasValue && !w.isRetired).ToList();
+            var trainees = gameData.wrestlers.Values.Where(w => w.contract?.companyId == company.id && w.age < 25 && !w.trainerId.HasValue && !w.isRetired).ToList();
 
             foreach (var trainee in trainees)
             {
                 var trainer = trainers[Random.Range(0, trainers.Count)];
                 trainee.trainerId = trainer.staffId;
-                var trainerInfo = gameData.wrestlers.First(w => w.id == trainer.staffId);
+                var trainerInfo = gameData.wrestlers[trainer.staffId];
                 Debug.Log($"[Training] {trainerInfo.name} is now training {trainee.name}.");
             }
         }
@@ -153,9 +152,9 @@ public static class WorldEvolutionManager
 
     public static void ProcessMonthlyTraining(GameData gameData)
     {
-        foreach (var wrestler in gameData.wrestlers.Where(w => w.trainerId.HasValue && !w.isRetired))
+        foreach (var wrestler in gameData.wrestlers.Values.Where(w => w.trainerId.HasValue && !w.isRetired))
         {
-            var trainerStaffInfo = gameData.companies
+            var trainerStaffInfo = gameData.companies.Values
                 .SelectMany(c => c.corporateStaff)
                 .FirstOrDefault(s => s.staffId == wrestler.trainerId.Value);
 
@@ -176,7 +175,7 @@ public static class WorldEvolutionManager
                     case 3: wrestler.psychology = Mathf.Min(100, wrestler.psychology + 1); break;
                     case 4: wrestler.stamina = Mathf.Min(100, wrestler.stamina + 1); break;
                 }
-                var trainerInfo = gameData.wrestlers.First(w => w.id == trainerStaffInfo.staffId);
+                var trainerInfo = gameData.wrestlers[trainerStaffInfo.staffId];
                 Debug.Log($"[Training] {wrestler.name} has improved under the guidance of {trainerInfo.name}!");
             }
         }

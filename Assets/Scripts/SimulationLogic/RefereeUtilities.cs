@@ -101,7 +101,7 @@ public static class RefereeUtilities
     /// </summary>
     public static List<Referee> GetTopReferees(GameData data, string criteria = "quality", int count = 5)
     {
-        var refs = data.referees.Where(r => r.isActive).ToList();
+        var refs = data.referees.Values.Where(r => r.isActive).ToList();
         
         return criteria.ToLower() switch
         {
@@ -139,7 +139,7 @@ public static class RefereeUtilities
     /// </summary>
     public static List<Referee> GetSuitableReferees(GameData data, string matchType, bool titleMatch = false)
     {
-        var suitable = data.referees
+        var suitable = data.referees.Values
             .Where(r => r.isActive && !r.isInjured && r.IsSuitableFor(matchType))
             .ToList();
         
@@ -158,7 +158,7 @@ public static class RefereeUtilities
     {
         var report = "=== REFEREE POWER RANKINGS ===\n\n";
         
-        var refs = data.referees
+        var refs = data.referees.Values
             .Where(r => r.isActive && r.stats.totalMatches >= 10)
             .OrderByDescending(r => CalculatePowerRanking(r))
             .ToList();
@@ -220,7 +220,7 @@ public static class RefereeUtilities
     {
         var report = "=== REFEREE LEAGUE STATISTICS ===\n\n";
         
-        var activeRefs = data.referees.Where(r => r.isActive).ToList();
+        var activeRefs = data.referees.Values.Where(r => r.isActive).ToList();
         
         if (activeRefs.Count == 0)
         {
@@ -256,7 +256,7 @@ public static class RefereeUtilities
     /// </summary>
     public static List<Referee> GetRefereesNeedingTraining(GameData data)
     {
-        return data.referees
+        return data.referees.Values
             .Where(r => r.isActive && 
                    (r.experience < 60 || 
                     r.consistency < 60 || 
@@ -272,7 +272,7 @@ public static class RefereeUtilities
     /// </summary>
     public static List<Referee> GetRefereesReadyForPromotion(GameData data)
     {
-        return data.referees
+        return data.referees.Values
             .Where(r => r.isActive && 
                    !r.isMainEventRef && 
                    r.experience >= 70 && 
@@ -287,7 +287,7 @@ public static class RefereeUtilities
     /// </summary>
     public static void AdvanceAllRefereesWeek(GameData data)
     {
-        foreach (var referee in data.referees)
+        foreach (var referee in data.referees.Values)
         {
             RefereeCareerManager.AdvanceWeek(referee);
         }

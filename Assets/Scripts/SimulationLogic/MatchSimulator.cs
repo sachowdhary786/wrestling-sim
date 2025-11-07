@@ -156,9 +156,10 @@ public static class MatchSimulator
         List<Wrestler> wrestlers = new List<Wrestler>();
         foreach (Guid id in booking.participants)
         {
-            var wrestler = data.wrestlers.Find(x => x.id == id);
-            if (wrestler != null)
+            if (data.wrestlers.TryGetValue(id, out var wrestler))
+            {
                 wrestlers.Add(wrestler);
+            }
         }
         return wrestlers;
     }

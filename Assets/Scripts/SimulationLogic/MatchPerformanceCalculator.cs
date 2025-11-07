@@ -46,8 +46,7 @@ public static class MatchPerformanceCalculator
     {
         foreach (var traitId in wrestler.traits)
         {
-            var trait = data.traits.Find(t => t.id == traitId);
-            if (trait == null)
+            if (!data.traits.TryGetValue(traitId, out var trait))
                 continue;
 
             switch (trait.effect)
@@ -136,12 +135,14 @@ public static class MatchPerformanceCalculator
     public static int GetTagChemistryBonus(List<Wrestler> wrestlers, GameData data)
     {
         int bonus = 0;
+        var participantIds = new HashSet<Guid>(wrestlers.Select(w => w.id));
+
         foreach (var team in data.teams)
         {
             int count = 0;
             foreach (var memberId in team.members)
             {
-                if (wrestlers.Exists(w => w.id == memberId))
+                if (participantIds.Contains(memberId))
                     count++;
             }
 
@@ -154,31 +155,29 @@ public static class MatchPerformanceCalculator
     public static int CalculateMatchRating(MatchState state)
     {
         float roadAgentBonus = 0;
-        if (state.match.roadAgentId.HasValue)
+        if (
+            state.match.roadAgentId.HasValue
+            && state.data.wrestlers.TryGetValue(state.match.roadAgentId.Value, out var roadAgent)
+        )
         {
-            var roadAgent = state.data.wrestlers.FirstOrDefault(w =>
-                w.id == state.match.roadAgentId.Value
+            // Find the company the road agent works for
+            var company = state.data.companies.Values.FirstOrDefault(c =>
+                c.corporateStaff.Any(s => s.staffId == roadAgent.id)
             );
-            var company = state.data.companies.FirstOrDefault();
             if (company != null)
             {
-                var roadAgentStaffInfo = company.corporateStaff.FirstOrDefault(s =>
-                    s.staffId == state.match.roadAgentId.Value
+                var roadAgentStaffInfo = company.corporateStaff.First(s =>
+                    s.staffId == roadAgent.id
                 );
-                if (roadAgent != null && roadAgentStaffInfo != null)
-                {
-                    // Agent's psychology influence contributes to the match story quality
-                    roadAgentBonus = roadAgentStaffInfo.psychologyInfluence / 10f; // Adds up to 10 points
-                    Debug.Log($"  Road Agent {roadAgent.name} bonus: +{roadAgentBonus:F1}");
-                }
+                roadAgentBonus = roadAgentStaffInfo.psychologyInfluence / 10f; // Adds up to 10 points
+                Debug.Log($"  Road Agent {roadAgent.name} bonus: +{roadAgentBonus:F1}");
             }
         }
 
         float managerBonus = 0;
         foreach (var entry in state.match.managers)
         {
-            var manager = state.data.wrestlers.FirstOrDefault(w => w.id == entry.Value);
-            if (manager != null)
+            if (state.data.wrestlers.TryGetValue(entry.Value, out var manager))
             {
                 // Manager's charisma and mic skill contribute to the match hype
                 managerBonus += (manager.charisma + manager.micSkill) / 20f; // Each manager adds up to 10 points

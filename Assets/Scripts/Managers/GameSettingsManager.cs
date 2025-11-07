@@ -13,7 +13,7 @@ public class GameSettingsManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<GameSettingsManager>();
+                _instance = FindFirstObjectByType<GameSettingsManager>();
                 if (_instance == null)
                 {
                     GameObject go = new GameObject("GameSettingsManager");

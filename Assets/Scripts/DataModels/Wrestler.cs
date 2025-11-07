@@ -30,6 +30,7 @@ public class Wrestler
     public bool isRetired = false;
     public bool isManager = false;
     public Guid? trainerId;
+    public Guid? companyId;
     public int injurySeverity; // 1 = Minor, 2 = Moderate, 3 = Severe
     public string injuryType;
     public int recoveryWeeksRemaining;

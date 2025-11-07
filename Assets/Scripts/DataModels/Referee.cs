@@ -1,33 +1,35 @@
+using System;
+
 [System.Serializable]
 public class Referee
 {
-    public string id;
+    public Guid id;
     public string name;
-    
+
     // Core Stats (0-100)
-    public int strictness;      // Higher = more DQs, count outs, rule enforcement
-    public int corruption;      // Higher = more easily influenced, biased finishes
-    public int experience;      // Affects match pacing, rating bonus
-    public int consistency;     // Affects how predictable their calls are
-    
+    public int strictness; // Higher = more DQs, count outs, rule enforcement
+    public int corruption; // Higher = more easily influenced, biased finishes
+    public int experience; // Affects match pacing, rating bonus
+    public int consistency; // Affects how predictable their calls are
+
     // Status
-    public bool isFavoredByCompany;  // Company-backed referee
+    public bool isFavoredByCompany; // Company-backed referee
     public bool isActive;
     public bool isInjured;
     public int injuryWeeksRemaining;
-    
+
     // Career
     public int age;
     public int yearsExperience;
     public RefereeStats stats;
-    
+
     // Fatigue & Scheduling
-    public int fatigue;         // 0-100, increases with matches
+    public int fatigue; // 0-100, increases with matches
     public int matchesThisWeek;
     public int consecutiveWeeks;
-    
+
     // Specializations
-    public bool isMainEventRef;      // Better at handling big matches
+    public bool isMainEventRef; // Better at handling big matches
     public bool isHardcoreSpecialist; // Better at extreme rules matches
 
     public Referee(string name, int strictness, int corruption, int experience)
@@ -44,7 +46,7 @@ public class Referee
         this.stats = new RefereeStats(this.id);
     }
 
-    public Referee() 
+    public Referee()
     {
         this.stats = new RefereeStats(this.id);
     }
@@ -74,7 +76,7 @@ public class Referee
                 "StreetFight" => true,
                 "FallsCountAnywhere" => true,
                 "LastManStanding" => true,
-                _ => true // Can still do regular matches
+                _ => true, // Can still do regular matches
             };
         }
 

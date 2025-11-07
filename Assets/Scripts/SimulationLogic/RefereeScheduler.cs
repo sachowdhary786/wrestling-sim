@@ -19,14 +19,14 @@ public static class RefereeScheduler
         }
 
         // Get available referees
-        var availableRefs = data.referees
+        var availableRefs = data.referees.Values
             .Where(r => RefereeCareerManager.CanWorkMatch(r))
             .ToList();
 
         if (availableRefs.Count == 0)
         {
             Debug.LogWarning("No available referees! Using injured/fatigued refs...");
-            availableRefs = data.referees.Where(r => r.isActive && !r.isInjured).ToList();
+            availableRefs = data.referees.Values.Where(r => r.isActive && !r.isInjured).ToList();
         }
 
         // Sort matches by importance
@@ -168,7 +168,7 @@ public static class RefereeScheduler
     {
         var report = "=== REFEREE SCHEDULE REPORT ===\n\n";
 
-        var activeRefs = data.referees.Where(r => r.isActive).OrderBy(r => r.name).ToList();
+        var activeRefs = data.referees.Values.Where(r => r.isActive).OrderBy(r => r.name).ToList();
 
         foreach (var referee in activeRefs)
         {
@@ -190,7 +190,7 @@ public static class RefereeScheduler
     public static void BalanceWorkload(List<Show> upcomingShows, GameData data)
     {
         // Pre-assign referees to shows to balance workload
-        var availableRefs = data.referees.Where(r => r.isActive && !r.isInjured).ToList();
+        var availableRefs = data.referees.Values.Where(r => r.isActive && !r.isInjured).ToList();
         
         if (availableRefs.Count == 0)
             return;
@@ -238,7 +238,7 @@ public static class RefereeScheduler
     /// </summary>
     public static Referee FindReplacementReferee(Match match, Referee originalRef, GameData data)
     {
-        var availableRefs = data.referees
+        var availableRefs = data.referees.Values
             .Where(r => r.isActive && !r.isInjured && r != originalRef)
             .OrderByDescending(r => r.experience)
             .ToList();

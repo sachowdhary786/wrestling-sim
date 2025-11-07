@@ -9,11 +9,10 @@ public static class TitleManager
         if (match.titleId == Guid.Empty)
             return;
 
-        Title title = data.titles.Find(t => t.id == match.titleId);
-        if (title == null)
+        if (!data.titles.TryGetValue(match.titleId.Value, out var title))
             return;
 
-        Wrestler winner = data.wrestlers.Find(w => w.id == match.winnerId);
+        Wrestler winner = data.wrestlers[match.winnerId];
 
         if (title.currentChampionId.HasValue && winner.id != title.currentChampionId.Value)
         {

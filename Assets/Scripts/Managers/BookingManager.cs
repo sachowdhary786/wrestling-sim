@@ -9,7 +9,7 @@ public static class BookingManager
     {
         var availableWrestlers = GetAvailableWrestlers(company, data);
         var availableManagers = data
-            .wrestlers.Where(w => w.isManager && w.contract?.companyId == company.id)
+            .wrestlers.Values.Where(w => w.isManager && w.contract?.companyId == company.id)
             .ToList();
         var availableRoadAgents = company
             .corporateStaff.Where(s => s.role == StaffRole.RoadAgent)
@@ -144,7 +144,7 @@ public static class BookingManager
     private static List<Wrestler> GetAvailableWrestlers(Company company, GameData data)
     {
         return data
-            .wrestlers.Where(w =>
+            .wrestlers.Values.Where(w =>
                 w.contract != null && w.contract.companyId == company.id && IsAvailable(w)
             )
             .ToList();

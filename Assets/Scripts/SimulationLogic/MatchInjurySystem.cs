@@ -68,15 +68,14 @@ public static class MatchInjurySystem
         int recoveryWeeks = GetRecoveryWeeks(severity);
 
         // Apply bonus from company doctor, if available
-        var company = data.companies.FirstOrDefault(c => c.id == wrestler.contract?.companyId);
-        if (company != null)
+        if (wrestler.contract != null && data.companies.TryGetValue(wrestler.contract.companyId, out var company))
         {
             var doctor = company.corporateStaff.FirstOrDefault(s => s.role == StaffRole.Doctor);
             if (doctor != null)
             {
                 float reduction = recoveryWeeks * (doctor.injuryRecoveryBonus / 100f);
                 recoveryWeeks -= Mathf.RoundToInt(reduction);
-                var doctorInfo = data.wrestlers.First(w => w.id == doctor.staffId);
+                var doctorInfo = data.wrestlers[doctor.staffId];
                 Debug.Log(
                     $"[Injury] {doctorInfo.name} has reduced {wrestler.name}'s recovery time!"
                 );

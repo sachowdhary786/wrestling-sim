@@ -7,7 +7,8 @@ public static class RandomEventManager
         int roll = Random.Range(0, 100);
         if (roll < 5)
         {
-            Wrestler w = data.wrestlers[Random.Range(0, data.wrestlers.Count)];
+            var wrestlers = new System.Collections.Generic.List<Wrestler>(data.wrestlers.Values);
+            Wrestler w = wrestlers[Random.Range(0, wrestlers.Count)];
             Debug.Log($"{w.name} cut a viral promo online and gained popularity!");
             w.popularity = Mathf.Min(100, w.popularity + 5);
         }

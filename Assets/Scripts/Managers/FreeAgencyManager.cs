@@ -10,14 +10,14 @@ public static class FreeAgencyManager
     {
         Debug.Log("[Free Agency] Processing free agency period...");
 
-        var freeAgents = gameData.wrestlers.Where(w => w.contract == null && !w.isRetired).ToList();
+        var freeAgents = gameData.wrestlers.Values.Where(w => w.contract == null && !w.isRetired).ToList();
         if (freeAgents.Count == 0)
         {
             Debug.Log("[Free Agency] No free agents available.");
             return;
         }
 
-        foreach (var company in gameData.companies.Where(c => c.companyType == CompanyType.AI))
+        foreach (var company in gameData.companies.Values.Where(c => c.companyType == CompanyType.AI))
         {
             // AI companies will try to sign one person if they are below their roster cap
             if (company.roster.Count < company.rosterCap)

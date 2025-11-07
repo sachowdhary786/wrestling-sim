@@ -1,49 +1,50 @@
 [
   {
-    "id": "c1a9c3b8-4d6e-4c1f-a7d4-0a2b1c3d4e5f",
-    "name": "All Elite Wrestling",
-    "acronym": "AEW",
+    "id": "c0a1b2c3-d4e5-f6a7-8901-234567890abc",
+    "name": "Global Wrestling Federation",
+    "acronym": "GWF",
+    "companyType": 1,
+    "tier": 1,
+    "prestige": 88,
+    "finances": 7500000,
+    "bookingPhilosophy": 2,
+    "rosterCap": 80,
+    "delegateBooking": true
+  },
+  {
+    "id": "d1b2c3d4-e5f6-a7b8-9012-34567890abcd",
+    "name": "Supreme Championship Wrestling",
+    "acronym": "SCW",
     "companyType": 0,
-    "tier": 1, 
+    "tier": 1,
+    "prestige": 82,
+    "finances": 4000000,
+    "bookingPhilosophy": 0,
+    "rosterCap": 65,
+    "delegateBooking": true
+  },
+  {
+    "id": "e2c3d4e5-f6a7-b8c9-0123-4567890abcde",
+    "name": "Rising Sun Pro Wrestling",
+    "acronym": "RSPW",
+    "companyType": 1,
+    "tier": 1,
     "prestige": 85,
-    "finances": 5000000,
-        "bookingPhilosophy": 0,
-        "rosterCap": 70,
-        "delegateBooking": true
+    "finances": 3000000,
+    "bookingPhilosophy": 3,
+    "rosterCap": 55,
+    "delegateBooking": true
   },
   {
-    "id": "d2b8d4c9-5e7f-4d2e-8c6a-1b3c4d5e6f7g",
-    "name": "World Wrestling Entertainment",
-    "acronym": "WWE",
-    "companyType": 1,
-    "tier": 1,
-    "prestige": 90,
-    "finances": 10000000,
-        "bookingPhilosophy": 2,
-        "rosterCap": 90,
-        "delegateBooking": true
-  },
-  {
-    "id": "e3c7e5da-6f8g-4e3f-9d7b-2c4d5e6f7g8h",
-    "name": "New Japan Pro-Wrestling",
-    "acronym": "NJPW",
-    "companyType": 1,
-    "tier": 1,
-    "prestige": 80,
-    "finances": 2000000,
-        "bookingPhilosophy": 3,
-        "rosterCap": 60,
-        "delegateBooking": true
-  },
-  {
-    "id": "f4d6e5f7-a8b9-c0d1-e2f3-a4b5c6d7e8f9",
-    "name": "Backyard Championship Wrestling",
-    "acronym": "BCW",
+    "id": "f3d4e5f6-a7b8-c9d0-1234-567890abcdef",
+    "name": "Local Championship Wrestling",
+    "acronym": "LCW",
     "companyType": 1,
     "tier": 0,
-    "prestige": 25,
-    "finances": 5000,
+    "prestige": 30,
+    "finances": 10000,
     "bookingPhilosophy": 0,
-    "rosterCap": 20
+    "rosterCap": 25,
+    "delegateBooking": false
   }
 ]

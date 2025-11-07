@@ -1,0 +1,62 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "name": "Iron Man",
+    "description": "Recovers from fatigue faster and has higher stamina.",
+    "effect": 0
+  },
+  {
+    "id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+    "name": "Technical Wizard",
+    "description": "Excels in technical wrestling, gaining a bonus in matches.",
+    "effect": 1
+  },
+  {
+    "id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+    "name": "Brawler",
+    "description": "Adept at brawling and hardcore matches.",
+    "effect": 2
+  },
+  {
+    "id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+    "name": "High Flyer",
+    "description": "Performs spectacular aerial maneuvers.",
+    "effect": 3
+  },
+  {
+    "id": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+    "name": "Hardcore Specialist",
+    "description": "Thrives in hardcore and no-disqualification matches.",
+    "effect": 4
+  },
+  {
+    "id": "f6a7b8c9-d0e1-2345-6789-0abcdef12345",
+    "name": "Submission Expert",
+    "description": "Excels at submission-based offense.",
+    "effect": 5
+  },
+  {
+    "id": "a7b8c9d0-e1f2-3456-7890-bcdef1234567",
+    "name": "Big Match Performer",
+    "description": "Performs better in high-stakes and title matches.",
+    "effect": 6
+  },
+  {
+    "id": "b8c9d0e1-f2a3-4567-8901-cdef12345678",
+    "name": "Lazy Worker",
+    "description": "Sometimes gives a subpar performance in matches.",
+    "effect": 7
+  },
+  {
+    "id": "c9d0e1f2-a3b4-5678-9012-def123456789",
+    "name": "Chemistry Master",
+    "description": "Has great chemistry with a wide variety of opponents.",
+    "effect": 8
+  },
+  {
+    "id": "d0e1f2a3-b4c5-6789-9012-ef1234567890",
+    "name": "Crowd Favourite",
+    "description": "Gains a bonus when performing in their hometown or in front of a large crowd.",
+    "effect": 9
+  }
+]

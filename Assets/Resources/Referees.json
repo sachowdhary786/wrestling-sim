@@ -1,0 +1,72 @@
+[
+  {
+    "id": "r1a2b3c4-d5e6-f7a8-9012-34567890abcd",
+    "name": "Mark Johnson",
+    "strictness": 75,
+    "corruption": 10,
+    "experience": 90,
+    "consistency": 85,
+    "isMainEventRef": true,
+    "isHardcoreSpecialist": false,
+    "isFavoredByCompany": false,
+    "isActive": true,
+    "age": 48,
+    "yearsExperience": 20
+  },
+  {
+    "id": "r2b3c4d5-e6f7-a8b9-0123-4567890abcde",
+    "name": "David King",
+    "strictness": 40,
+    "corruption": 65,
+    "experience": 70,
+    "consistency": 60,
+    "isMainEventRef": false,
+    "isHardcoreSpecialist": false,
+    "isFavoredByCompany": true,
+    "isActive": true,
+    "age": 42,
+    "yearsExperience": 15
+  },
+  {
+    "id": "r3c4d5e6-f7a8-b9c0-1234-567890abcdef",
+    "name": "Tom Riley",
+    "strictness": 85,
+    "corruption": 5,
+    "experience": 75,
+    "consistency": 90,
+    "isMainEventRef": false,
+    "isHardcoreSpecialist": false,
+    "isFavoredByCompany": false,
+    "isActive": true,
+    "age": 38,
+    "yearsExperience": 12
+  },
+  {
+    "id": "r4d5e6f7-a8b9-c0d1-2345-67890abcdef0",
+    "name": "Jack Miller",
+    "strictness": 25,
+    "corruption": 20,
+    "experience": 60,
+    "consistency": 70,
+    "isMainEventRef": false,
+    "isHardcoreSpecialist": true,
+    "isFavoredByCompany": false,
+    "isActive": true,
+    "age": 35,
+    "yearsExperience": 10
+  },
+  {
+    "id": "r5e6f7a8-b9c0-d1e2-3456-7890abcdef01",
+    "name": "Chris Roberts",
+    "strictness": 50,
+    "corruption": 15,
+    "experience": 40,
+    "consistency": 75,
+    "isMainEventRef": false,
+    "isHardcoreSpecialist": false,
+    "isFavoredByCompany": false,
+    "isActive": true,
+    "age": 28,
+    "yearsExperience": 4
+  }
+]

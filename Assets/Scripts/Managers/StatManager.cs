@@ -5,12 +5,12 @@ public static class StatManager
 {
     public static void UpdateAfterMatch(Match match, GameData data)
     {
-        Wrestler winner = data.wrestlers.Find(w => w.id == match.winnerId);
+        Wrestler winner = data.wrestlers[match.winnerId];
 
         // Adjust stats
         foreach (Guid id in match.participants)
         {
-            Wrestler w = data.wrestlers.Find(x => x.id == id);
+            Wrestler w = data.wrestlers[id];
 
             if (w.id == winner.id)
                 w.popularity = Mathf.Min(100, w.popularity + 2);

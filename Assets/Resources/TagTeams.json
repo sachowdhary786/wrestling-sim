@@ -1,0 +1,20 @@
+[
+  {
+    "id": "t1a2b3c4-d5e6-f7a8-9012-34567890abcd",
+    "name": "The Powerhouse Express",
+    "members": [
+      "w2b3c4d5-e6f7-a8b9-0123-4567890abcde",
+      "w5e6f7a8-b9c0-d1e2-3456-7890abcdef01"
+    ],
+    "chemistry": 80
+  },
+  {
+    "id": "t2b3c4d5-e6f7-a8b9-0123-4567890abcde",
+    "name": "World Elite",
+    "members": [
+      "w1a2b3c4-d5e6-f7a8-9012-34567890abcd",
+      "w3c4d5e6-f7a8-b9c0-1234-567890abcdef"
+    ],
+    "chemistry": 75
+  }
+]

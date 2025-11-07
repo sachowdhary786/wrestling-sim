@@ -180,7 +180,7 @@ public static class MatchPhaseSimulator
                 && state.match.finishType == FinishType.ControversialFinish;
             bool wasBumped = state.match.referee.stats.timesBumped > 0;
 
-            RefereeCareerManager.RecordMatch(state.match.referee, state.match, wasBumped);
+            RefereeCareerManager.RecordMatch(state.match.referee, state.match, wasKnockedOut, wasBumped);
         }
 
         // Check for injuries
@@ -194,12 +194,8 @@ public static class MatchPhaseSimulator
             state.data
         );
 
-        // Post-match angle chance
-        if (UnityEngine.Random.value < 0.15f) // 15% chance
-        {
-            Debug.Log($"  POST-MATCH: Something is happening after the bell!");
-            // Could trigger storyline events here
-        }
+        // Attempt to trigger a post-match angle.
+        AngleManager.TryTriggerPostMatchAngle(state, winner, state.data);
     }
 
     private static FinishType DetermineFinishType(MatchState state)

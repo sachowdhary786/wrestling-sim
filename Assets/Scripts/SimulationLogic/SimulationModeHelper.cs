@@ -164,14 +164,19 @@ public static class SimulationModeHelper
         };
 
         // Get winner name
-        var winner = data.wrestlers.Find(w => w.id == match.winnerId);
-        result.winnerName = winner != null ? winner.name : "Unknown";
+        if (data.wrestlers.TryGetValue(match.winnerId, out var winner))
+        {
+            result.winnerName = winner.name;
+        }
+        else
+        {
+            result.winnerName = "Unknown";
+        }
 
         // Get participant names
         foreach (var participantId in match.participants)
         {
-            var wrestler = data.wrestlers.Find(w => w.id == participantId);
-            if (wrestler != null)
+            if (data.wrestlers.TryGetValue(participantId, out var wrestler))
             {
                 result.participantNames.Add(wrestler.name);
 
@@ -193,8 +198,14 @@ public static class SimulationModeHelper
         // Get title name if applicable
         if (match.titleMatch && match.titleId.HasValue)
         {
-            var title = data.titles?.Find(t => t.id == match.titleId.Value);
-            result.titleName = title != null ? title.name : "Championship";
+            if (data.titles.TryGetValue(match.titleId.Value, out var title))
+            {
+                result.titleName = title.name;
+            }
+            else
+            {
+                result.titleName = "Championship";
+            }
         }
 
         return result;

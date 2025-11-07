@@ -236,7 +236,7 @@ public static class WrestlerStateManager
     {
         Debug.Log("[STATE] Running weekly wrestler state updates...");
 
-        foreach (var wrestler in data.wrestlers)
+        foreach (var wrestler in data.wrestlers.Values)
         {
             // Reset weekly counters
             wrestler.matchesThisWeek = 0;
@@ -267,7 +267,7 @@ public static class WrestlerStateManager
     {
         Debug.Log("[STATE] Running monthly wrestler state updates...");
 
-        foreach (var wrestler in data.wrestlers)
+        foreach (var wrestler in data.wrestlers.Values)
         {
             wrestler.matchesThisMonth = 0;
         }

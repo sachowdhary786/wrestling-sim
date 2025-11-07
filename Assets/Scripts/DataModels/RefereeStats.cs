@@ -7,7 +7,7 @@ using System.Collections.Generic;
 [Serializable]
 public class RefereeStats
 {
-    public string refereeId;
+    public Guid refereeId;
 
     // Match Statistics
     public int totalMatches;
@@ -42,7 +42,7 @@ public class RefereeStats
     // Recent Performance (last 10 matches)
     public List<int> recentMatchRatings = new List<int>();
 
-    public RefereeStats(string refereeId)
+    public RefereeStats(Guid refereeId)
     {
         this.refereeId = refereeId;
         this.reputation = 50; // Start neutral
@@ -129,7 +129,7 @@ public class RefereeStats
         averageMatchRating = ((averageMatchRating * (totalMatches - 1)) + newRating) / totalMatches;
     }
 
-    private void UpdateReputation(int matchRating, bool wasKnockedOut, bool wasBumped)
+    public void UpdateReputation(int matchRating, bool wasKnockedOut, bool wasBumped)
     {
         // Good performance increases reputation
         if (matchRating >= 80)

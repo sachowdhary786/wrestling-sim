@@ -13,7 +13,7 @@ public static class FinancialManager
     public static void ProcessMonthlyFinances(GameData gameData)
     {
         Debug.Log("[Finances] Processing monthly finances for major promotions...");
-        var majorPromotions = gameData.companies.Where(c => c.tier == CompanyTier.Major);
+        var majorPromotions = gameData.companies.Values.Where(c => c.tier == CompanyTier.Major);
 
         foreach (var company in majorPromotions)
         {
@@ -36,7 +36,7 @@ public static class FinancialManager
         var participants = show.matches.SelectMany(m => m.participants).Distinct();
         foreach (var wrestlerId in participants)
         {
-            var wrestler = gameData.wrestlers.First(w => w.id == wrestlerId);
+            var wrestler = gameData.wrestlers[wrestlerId];
 
             // Calculate effective local popularity with crowd fatigue
             int fatigue = wrestler.crowdFatigue.ContainsKey(show.location) ? wrestler.crowdFatigue[show.location] : 0;

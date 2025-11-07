@@ -79,6 +79,15 @@ public static class RefereeCareerManager
         // Check for injury
         CheckForInjury(referee, match.matchType, wasKnockedOut, wasBumped);
 
+        // Award experience
+        int experienceGain = 5; // Base experience
+        if (match.titleMatch) experienceGain += 5;
+        if (match.rating >= 80) experienceGain += 3;
+        referee.experience = Mathf.Min(100, referee.experience + experienceGain);
+
+        // Adjust reputation
+        referee.stats.UpdateReputation(match.rating, wasKnockedOut, wasBumped);
+
         // Check for achievements
         CheckAchievements(referee);
     }
